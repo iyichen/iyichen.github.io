@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Spring,SourceCode,Environment,Properties,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="PropertyResolver在Spring中的作用是负责属性解析，例如在XML中替换占位符(${})属性，@Value注解等">
+<meta name="keywords" content="Java,Spring,SourceCode,Environment,Properties">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring中的PropertyResolver">
+<meta property="og:url" content="https://iyichen.xyz/2019/05/spring-property-resolver/index.html">
+<meta property="og:site_name" content="杂货店">
+<meta property="og:description" content="PropertyResolver在Spring中的作用是负责属性解析，例如在XML中替换占位符(${})属性，@Value注解等">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://iyichen.xyz/images/190519-PropertyResolver.png">
+<meta property="og:updated_time" content="2020-10-29T13:09:09.660Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring中的PropertyResolver">
+<meta name="twitter:description" content="PropertyResolver在Spring中的作用是负责属性解析，例如在XML中替换占位符(${})属性，@Value注解等">
+<meta name="twitter:image" content="https://iyichen.xyz/images/190519-PropertyResolver.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://iyichen.xyz/2019/05/spring-property-resolver/">
+
+
+
+
+
+  <title>Spring中的PropertyResolver | 杂货店</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?00f982f755818931cf2f1dc7bc1d7aa3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杂货店</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">得之坦然，失之淡然</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/05/spring-property-resolver/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="蛋筒冰淇淋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杂货店">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring中的PropertyResolver</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T00:00:00+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  1.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong><code>PropertyResolver</code>在<code>Spring</code>中的作用是负责属性解析，例如在<code>XML</code>中替换占位符(<code>${}</code>)属性，<code>@Value</code>注解等</strong></p>
+<a id="more"></a>
+<h2 id="PropertyResolver"><a href="#PropertyResolver" class="headerlink" title="PropertyResolver"></a>PropertyResolver</h2><p><img src="/images/190519-PropertyResolver.png" alt="PropertySourcesPropertyResolver"></p>
+<h2 id="PropertySource-amp-PropertySources"><a href="#PropertySource-amp-PropertySources" class="headerlink" title="PropertySource &amp; PropertySources"></a>PropertySource &amp; PropertySources</h2><p>在介绍<code>PropertyResolver</code>之前，先介绍下<code>PropertySource</code>和<code>PropertySources</code>。<code>PropertySource</code>可以看做是包含了<code>name/value</code>的对象，而<code>PropertySources</code>则是由多个<code>PropertySource</code>组成的对象</p>
+<h3 id="PropertySource"><a href="#PropertySource" class="headerlink" title="PropertySource"></a>PropertySource</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertySource</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存储name/value的对象，可以是任意对象，只要覆盖`getProperty`即可</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> T source;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PropertySource</span><span class="params">(String name, T source)</span> </span>&#123;</span><br><span class="line">        Assert.hasText(name, <span class="string">"Property source name must contain at least one character"</span>);</span><br><span class="line">        Assert.notNull(source, <span class="string">"Property source must not be null"</span>);</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.source = source;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PropertySource</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(name, (T) <span class="keyword">new</span> Object());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.source;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断`source`中是否包含指定属性(`name`)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsProperty</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (getProperty(name) != <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从`source`中根据指定属性名称(`name`)获取属性值(`value`)，由子类实现</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Object <span class="title">getProperty</span><span class="params">(String name)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略`toString`，`hashCode`，`equals`方法</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回一个`PropertySource`</span></span><br><span class="line">    <span class="comment">// 主要供内部使用，也可以用于集合比较，可以看方法注释中的示例代码</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> PropertySource&lt;?&gt; named(String name) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ComparisonPropertySource(name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认实现，用于当`ApplicationContext`创建时无法及时初始化`PropertySource`时使用。</span></span><br><span class="line">    <span class="comment">// 例如，`ServletContext`相关的属性必须等到`ServletContext`托付给`ApplicationContext`之后才能使用，可以在上下文刷新时替换</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">StubPropertySource</span> <span class="keyword">extends</span> <span class="title">PropertySource</span>&lt;<span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">StubPropertySource</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(name, <span class="keyword">new</span> Object());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getProperty</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ComparisonPropertySource</span> <span class="keyword">extends</span> <span class="title">StubPropertySource</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String USAGE_ERROR =</span><br><span class="line">                <span class="string">"ComparisonPropertySource instances are for use with collection comparison only"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ComparisonPropertySource</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(name);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">getSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(USAGE_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsProperty</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(USAGE_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getProperty</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(USAGE_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> String.format(<span class="string">"%s [name='%s']"</span>, getClass().getSimpleName(), <span class="keyword">this</span>.name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="PropertySources"><a href="#PropertySources" class="headerlink" title="PropertySources"></a>PropertySources</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PropertySources</span> <span class="keyword">extends</span> <span class="title">Iterable</span>&lt;<span class="title">PropertySource</span>&lt;?&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否包含指定名称的`PropertySources`</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(String name)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据名称获取`PropertySources`</span></span><br><span class="line">    PropertySource&lt;?&gt; get(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>MutablePropertySources</code>是<code>PropertySources</code>的默认实现，保存了<code>List&lt;PropertySource&lt;?&gt;&gt;</code>(虽然是<code>list</code>但是实际上通过<code>PropertySources.name</code>保证了每个<code>PropertySources</code>唯一性)，并且还添加了添加/删除等方法，例如<code>addFirst(PropertySource&lt;?&gt; propertySource)</code>，<code>remove(String name)</code>等</p>
+<h2 id="PropertySourcesPropertyResolver"><a href="#PropertySourcesPropertyResolver" class="headerlink" title="PropertySourcesPropertyResolver"></a>PropertySourcesPropertyResolver</h2><p><code>PropertySourcesPropertyResolver</code>做的事，就是循环<code>PropertySources</code>，根据属性名称从<code>PropertySource</code>中获取属性值，并且对属性值做<strong>占位符解析替换</strong></p>
+<p>写个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Map&lt;String, Object&gt; mapProperties = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    mapProperties.put(<span class="string">"name"</span>, <span class="string">"Allen"</span>);</span><br><span class="line">    mapProperties.put(<span class="string">"age"</span>, <span class="number">12</span>);</span><br><span class="line">    mapProperties.put(<span class="string">"nickname"</span>, <span class="string">"$&#123;name&#125;|$&#123;age&#125;"</span>);</span><br><span class="line"></span><br><span class="line">    MutablePropertySources propertySources = <span class="keyword">new</span> MutablePropertySources();</span><br><span class="line">    <span class="comment">// 此处使用MapPropertySource，也可以使用其他的PropertySource实现类</span></span><br><span class="line">    propertySources.addLast(<span class="keyword">new</span> MapPropertySource(<span class="string">"user"</span>, mapProperties));</span><br><span class="line">    </span><br><span class="line">    PropertySourcesPropertyResolver propertySourcesPropertyResolver = <span class="keyword">new</span> PropertySourcesPropertyResolver(propertySources);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 是否忽略不能替换的占位符，默认为`false`。如果设置为`false`，当占位符无法替换时，抛出异常</span></span><br><span class="line">    propertySourcesPropertyResolver.setIgnoreUnresolvableNestedPlaceholders(<span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// 设置分隔符，默认为`:`。例如$&#123;a:1234&#125;，如果属性`a`存在，返回属性`a`的值，否则返回`1234`；</span></span><br><span class="line">    propertySourcesPropertyResolver.setValueSeparator(<span class="string">":"</span>);</span><br><span class="line">    <span class="comment">// 设置占位符格式，默认为`$&#123;&#125;`</span></span><br><span class="line">    propertySourcesPropertyResolver.setPlaceholderSuffix(<span class="string">"&#125;"</span>);</span><br><span class="line">    propertySourcesPropertyResolver.setPlaceholderPrefix(<span class="string">"$&#123;"</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"name -&gt; "</span> + propertySourcesPropertyResolver.getProperty(<span class="string">"name"</span>)); <span class="comment">// name -&gt; Allen</span></span><br><span class="line">    System.out.println(<span class="string">"age -&gt; "</span> + propertySourcesPropertyResolver.getProperty(<span class="string">"age"</span>)); <span class="comment">// age -&gt; 12</span></span><br><span class="line">    System.out.println(<span class="string">"nickname -&gt; "</span> + propertySourcesPropertyResolver.getProperty(<span class="string">"nickname"</span>)); <span class="comment">// nickname -&gt; Allen|12</span></span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"introduction -&gt; "</span> + propertySourcesPropertyResolver.resolvePlaceholders(<span class="string">"My name is $&#123;name&#125;, I'm $&#123;age&#125;."</span>)); <span class="comment">// introduction -&gt; My name is Allen, I'm 12.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="getProperty-方法实现"><a href="#getProperty-方法实现" class="headerlink" title="getProperty()方法实现"></a>getProperty()方法实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PropertySourcesPropertyResolver.java</span></span><br><span class="line"><span class="comment">// 参数`key`为属性名称</span></span><br><span class="line"><span class="comment">// 参数`targetValueType`为属性值类型</span></span><br><span class="line"><span class="comment">// 参数`resolveNestedPlaceholders`是否需要占位符替换</span></span><br><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">T <span class="title">getProperty</span><span class="params">(String key, Class&lt;T&gt; targetValueType, <span class="keyword">boolean</span> resolveNestedPlaceholders)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> debugEnabled = logger.isDebugEnabled();</span><br><span class="line">    <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">        logger.trace(String.format(<span class="string">"getProperty(\"%s\", %s)"</span>, key, targetValueType.getSimpleName()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.propertySources != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 循环所有的`propertySource`，查找属性名称(`key`)对应的属性值</span></span><br><span class="line">        <span class="keyword">for</span> (PropertySource&lt;?&gt; propertySource : <span class="keyword">this</span>.propertySources) &#123;</span><br><span class="line">            <span class="keyword">if</span> (debugEnabled) &#123;</span><br><span class="line">                logger.debug(String.format(<span class="string">"Searching for key '%s' in [%s]"</span>, key, propertySource.getName()));</span><br><span class="line">            &#125;</span><br><span class="line">            Object value = propertySource.getProperty(key);</span><br><span class="line">            <span class="keyword">if</span> (value != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Class&lt;?&gt; valueType = value.getClass();</span><br><span class="line">                <span class="comment">// 如果需要占位符解析 &amp;&amp; 属性值类型为`String`时做占位符替换</span></span><br><span class="line">                <span class="keyword">if</span> (resolveNestedPlaceholders &amp;&amp; value <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">                    value = resolveNestedPlaceholders((String) value);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (debugEnabled) &#123;</span><br><span class="line">                    logger.debug(String.format(<span class="string">"Found key '%s' in [%s] with type [%s] and value '%s'"</span>,</span><br><span class="line">                            key, propertySource.getName(), valueType.getSimpleName(), value));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (!<span class="keyword">this</span>.conversionService.canConvert(valueType, targetValueType)) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(String.format(</span><br><span class="line">                            <span class="string">"Cannot convert value [%s] from source type [%s] to target type [%s]"</span>,</span><br><span class="line">                            value, valueType.getSimpleName(), targetValueType.getSimpleName()));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 将属性值转为指定类型返回</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">this</span>.conversionService.convert(value, targetValueType);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (debugEnabled) &#123;</span><br><span class="line">        logger.debug(String.format(<span class="string">"Could not find key '%s' in any property source. Returning [null]"</span>, key));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>resolveNestedPlaceholders()</code>调用的是<code>AbstractPropertyResolver.resolveNestedPlaceholders()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstractPropertyResolver.java部分代码</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> String <span class="title">resolveNestedPlaceholders</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 根据`是否忽略不能识别的占位符名称`调用不同的解析方法</span></span><br><span class="line">    <span class="comment">// 区别在于如果使用`$&#123;a&#125;`时，属性`a`没有对应的属性值，`resolvePlaceholders`会输出`$&#123;a&#125;`，而`resolveRequiredPlaceholders`则抛出异常</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">this</span>.ignoreUnresolvableNestedPlaceholders ?</span><br><span class="line">            resolvePlaceholders(value) : resolveRequiredPlaceholders(value));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">resolvePlaceholders</span><span class="params">(String text)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.nonStrictHelper == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.nonStrictHelper = createPlaceholderHelper(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> doResolvePlaceholders(text, <span class="keyword">this</span>.nonStrictHelper);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">resolveRequiredPlaceholders</span><span class="params">(String text)</span> <span class="keyword">throws</span> IllegalArgumentException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.strictHelper == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.strictHelper = createPlaceholderHelper(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> doResolvePlaceholders(text, <span class="keyword">this</span>.strictHelper);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建`PropertyPlaceholderHelper`占位符解析器</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> PropertyPlaceholderHelper <span class="title">createPlaceholderHelper</span><span class="params">(<span class="keyword">boolean</span> ignoreUnresolvablePlaceholders)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PropertyPlaceholderHelper(<span class="keyword">this</span>.placeholderPrefix, <span class="keyword">this</span>.placeholderSuffix,</span><br><span class="line">            <span class="keyword">this</span>.valueSeparator, ignoreUnresolvablePlaceholders);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理占位符</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">doResolvePlaceholders</span><span class="params">(String text, PropertyPlaceholderHelper helper)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> helper.replacePlaceholders(text, <span class="keyword">new</span> PropertyPlaceholderHelper.PlaceholderResolver() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">resolvePlaceholder</span><span class="params">(String placeholderName)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 此处实际调用的是`PropertySourcesPropertyResolver`中的`getPropertyAsRawString()`方法，最终回到调用`getProperty()`</span></span><br><span class="line">            <span class="keyword">return</span> getPropertyAsRawString(placeholderName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子类实现</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> String <span class="title">getPropertyAsRawString</span><span class="params">(String key)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>可以看出，占位符处理工作是在<code>PropertyPlaceholderHelper.replacePlaceholders()</code>中实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PropertyPlaceholderHelper.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">replacePlaceholders</span><span class="params">(String value, PlaceholderResolver placeholderResolver)</span> </span>&#123;</span><br><span class="line">    Assert.notNull(value, <span class="string">"'value' must not be null"</span>);</span><br><span class="line">    <span class="keyword">return</span> parseStringValue(value, placeholderResolver, <span class="keyword">new</span> HashSet&lt;String&gt;());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> String <span class="title">parseStringValue</span><span class="params">(String strVal, PlaceholderResolver placeholderResolver, Set&lt;String&gt; visitedPlaceholders)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    StringBuilder result = <span class="keyword">new</span> StringBuilder(strVal);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 占位符可以自定义，默认为`$&#123;&#125;`</span></span><br><span class="line">    <span class="keyword">int</span> startIndex = strVal.indexOf(<span class="keyword">this</span>.placeholderPrefix);</span><br><span class="line">    <span class="keyword">while</span> (startIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> endIndex = findPlaceholderEndIndex(result, startIndex);</span><br><span class="line">        <span class="keyword">if</span> (endIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">            String placeholder = result.substring(startIndex + <span class="keyword">this</span>.placeholderPrefix.length(), endIndex);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 以$&#123;name&#125;来说，此处结果为name</span></span><br><span class="line">            String originalPlaceholder = placeholder;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 1.此处防止循环依赖</span></span><br><span class="line">            <span class="keyword">if</span> (!visitedPlaceholders.add(originalPlaceholder)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">                        <span class="string">"Circular placeholder reference '"</span> + originalPlaceholder + <span class="string">"' in property definitions"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 2.此处对结果递归解析，处理形如$&#123;name$&#123;age&#125;&#125;的形式，由内而外做处理，</span></span><br><span class="line">            <span class="comment">// 如果age值为1，会先处理$&#123;age&#125;，解析为$&#123;name1&#125;，再处理</span></span><br><span class="line">            placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 处理占位符，调用PropertySourcesPropertyResolver.getPropertyAsRawString() -&gt; getProperty()上述方法</span></span><br><span class="line">            String propVal = placeholderResolver.resolvePlaceholder(placeholder);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 3.此处解释了分隔符的作用，分隔符可以自定义，默认为`:`</span></span><br><span class="line">            <span class="comment">// 可以处理形如$&#123;name:123&#125;，解析为$&#123;name&#125;，如果name值不存在，则会使用默认值123</span></span><br><span class="line">            <span class="keyword">if</span> (propVal == <span class="keyword">null</span> &amp;&amp; <span class="keyword">this</span>.valueSeparator != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> separatorIndex = placeholder.indexOf(<span class="keyword">this</span>.valueSeparator);</span><br><span class="line">                <span class="keyword">if</span> (separatorIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">                    String actualPlaceholder = placeholder.substring(<span class="number">0</span>, separatorIndex);</span><br><span class="line">                    String defaultValue = placeholder.substring(separatorIndex + <span class="keyword">this</span>.valueSeparator.length());</span><br><span class="line">                    propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);</span><br><span class="line">                    <span class="keyword">if</span> (propVal == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        propVal = defaultValue;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (propVal != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 2.此处对结果递归解析，如age-&gt;12，name-&gt;$&#123;age&#125;，p-&gt;$&#123;name&#125;，即对解析结果再做解析</span></span><br><span class="line">                propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);</span><br><span class="line">                result.replace(startIndex, endIndex + <span class="keyword">this</span>.placeholderSuffix.length(), propVal);</span><br><span class="line">                <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">                    logger.trace(<span class="string">"Resolved placeholder '"</span> + placeholder + <span class="string">"'"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                startIndex = result.indexOf(<span class="keyword">this</span>.placeholderPrefix, startIndex + propVal.length());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.ignoreUnresolvablePlaceholders) &#123;</span><br><span class="line">                <span class="comment">// Proceed with unprocessed value.</span></span><br><span class="line">                startIndex = result.indexOf(<span class="keyword">this</span>.placeholderPrefix, endIndex + <span class="keyword">this</span>.placeholderSuffix.length());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Could not resolve placeholder '"</span> +</span><br><span class="line">                        placeholder + <span class="string">"'"</span> + <span class="string">" in string value \""</span> + strVal + <span class="string">"\""</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            visitedPlaceholders.remove(originalPlaceholder);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            startIndex = -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>1.循环依赖</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mapProperties.put(<span class="string">"def"</span>, <span class="string">"$&#123;abc&#125;"</span>);</span><br><span class="line">mapProperties.put(<span class="string">"abc"</span>, <span class="string">"$&#123;def&#125;"</span>);</span><br><span class="line"><span class="comment">// 或者如下形式</span></span><br><span class="line">mapProperties.put(<span class="string">"a"</span>, <span class="string">"$&#123;a&#125;"</span>); <span class="comment">// IllegalArgumentException</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>2.占位符递归</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mapProperties.put(<span class="string">"a"</span>, <span class="string">"a"</span>);</span><br><span class="line">mapProperties.put(<span class="string">"b"</span>, <span class="string">"b"</span>);</span><br><span class="line">mapProperties.put(<span class="string">"ab"</span>, <span class="string">"$&#123;a&#125;"</span>);</span><br><span class="line">mapProperties.put(<span class="string">"abc"</span>, <span class="string">"$&#123;a$&#123;b&#125;&#125;"</span>); <span class="comment">// getProperty("abc") -&gt; 最终输出`a`</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>3.分隔符使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mapProperties.put(<span class="string">"a"</span>, <span class="string">"$&#123;abc:123&#125;"</span>); <span class="comment">// getProperty("a") -&gt; 如果`abc`存在，输出`abc`的值；否则输出`123`</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    蛋筒冰淇淋
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iyichen.xyz/2019/05/spring-property-resolver/" title="Spring中的PropertyResolver">https://iyichen.xyz/2019/05/spring-property-resolver/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># Java</a>
+          
+            <a href="/tags/spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/sourcecode/" rel="tag"># SourceCode</a>
+          
+            <a href="/tags/environment/" rel="tag"># Environment</a>
+          
+            <a href="/tags/properties/" rel="tag"># Properties</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/consistent-hashing-java/" rel="next" title="一致性哈希(Consistent Hashing)">
+                <i class="fa fa-chevron-left"></i> 一致性哈希(Consistent Hashing)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/spring-environment/" rel="prev" title="Spring中的Environment">
+                Spring中的Environment <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="蛋筒冰淇淋">
+            
+              <p class="site-author-name" itemprop="name">蛋筒冰淇淋</p>
+              <p class="site-description motion-element" itemprop="description">得之坦然，失之淡然</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/iyichen" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:iyichen@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tutorials.jenkov.com/" title="Jenkov" target="_blank">Jenkov</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dzone.com/" title="DZone" target="_blank">DZone</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PropertyResolver"><span class="nav-number">1.</span> <span class="nav-text">PropertyResolver</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PropertySource-amp-PropertySources"><span class="nav-number">2.</span> <span class="nav-text">PropertySource &amp; PropertySources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertySource"><span class="nav-number">2.1.</span> <span class="nav-text">PropertySource</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PropertySources"><span class="nav-number">2.2.</span> <span class="nav-text">PropertySources</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PropertySourcesPropertyResolver"><span class="nav-number">3.</span> <span class="nav-text">PropertySourcesPropertyResolver</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getProperty-方法实现"><span class="nav-number">4.</span> <span class="nav-text">getProperty()方法实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yichen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+<!--
+<div>
+  <a href="http://www.beian.miit.gov.cn">浙ICP备18016077号</a>
+</div>
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'sasdJibp23EOXoGvXDxUAiDQ-MdYXbMMI',
+        appKey: '3UQsz1OyMb3Knz5rERw7DixV',
+        placeholder: '说点什么吧~',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+
+    //增加以下六行代码去除 power by valine
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <!-- <script type="text/javascript" src="/js/src/custom/clicksocialvalue.js"></script>
+  <script type="text/javascript" src="/js/src/custom/clicklove.js"></script> -->
+</html>

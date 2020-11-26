@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="AWS,Cloudfront,Lambda,Thumbnail,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。">
+<meta name="keywords" content="AWS,Cloudfront,Lambda,Thumbnail">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
+<meta property="og:url" content="https://iyichen.xyz/2019/12/resizing-image-with-cloudfront-and-lambdaedge/index.html">
+<meta property="og:site_name" content="杂货店">
+<meta property="og:description" content="国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://iyichen.xyz/images/191218-head-lambda.png">
+<meta property="og:image" content="https://iyichen.xyz/images/191218-lambda@edge.png">
+<meta property="og:image" content="https://iyichen.xyz/images/191218-resize-lambda@edge.png">
+<meta property="og:updated_time" content="2020-10-29T13:09:09.659Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
+<meta name="twitter:description" content="国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。">
+<meta name="twitter:image" content="https://iyichen.xyz/images/191218-head-lambda.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://iyichen.xyz/2019/12/resizing-image-with-cloudfront-and-lambdaedge/">
+
+
+
+
+
+  <title>使用Amazon Cloudfront+Lambda@Edge生成缩略图 | 杂货店</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?00f982f755818931cf2f1dc7bc1d7aa3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杂货店</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">得之坦然，失之淡然</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/12/resizing-image-with-cloudfront-and-lambdaedge/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="蛋筒冰淇淋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杂货店">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Amazon Cloudfront+Lambda@Edge生成缩略图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-18T00:00:00+08:00">
+                2019-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  1.5k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/images/191218-head-lambda.png" alt="191218-head-lambda"></p>
+<p>国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。</p>
+<a id="more"></a>
+<h2 id="Lambda-Edge"><a href="#Lambda-Edge" class="headerlink" title="Lambda@Edge"></a>Lambda@Edge</h2><p>Lambda@Edge可以认为是运行在Cloudfront上的Lambda，不同的是Lambda@Edge只支持<code>Nodejs</code>和<code>Python</code>两种语言，而且Lambda@Edge仅可在 <strong>美国东部 (弗吉尼亚北部) us-east-1</strong> 配置。</p>
+<p>我们可以在客户端访问Cloudfront的4个过程中配置Lambda：</p>
+<ul>
+<li>查看器请求(Viewer Request)：在检查是否命中Cloudfront缓存前执行，就是客户端每个请求都会执行</li>
+<li>源请求(Origin Request)：当Cloudfront缓存未命中，并且请求未到达源时执行</li>
+<li>源响应(Origin Response)：当Cloudfront缓存未命中，并且得到源响应后执行</li>
+<li>查看器响应(Viewer Response)：当Cloudfront命中缓存或者得到了源响应后执行，就是每个客户端请求都会执行</li>
+</ul>
+<p><img src="/images/191218-lambda@edge.png" alt="from https://docs.aws.amazon.com/zh_cn/lambda/latest/dg/lambda-edge.html"></p>
+<h2 id="方案架构"><a href="#方案架构" class="headerlink" title="方案架构"></a>方案架构</h2><p><img src="/images/191218-resize-lambda@edge.png" alt="lambda@edge"></p>
+<h3 id="Lambda配置"><a href="#Lambda配置" class="headerlink" title="Lambda配置"></a>Lambda配置</h3><p>我们在这里配置了2个Lambda函数：<br>1.配置于源请求，用于检查请求图片地址是否合法，判断是否需要修改请求。<br>2.配置于源响应，用于生成缩略图。</p>
+<p>配置于源请求的Lambda函数其实是可以省略的，此处我们希望缩略图能够统一存储，所以此函数主要用于修改请求地址，例如客户端请求图片为<code>/a/b/c_200x200.jpg</code>，在Lambda函数处理后，请求至S3的地址会修改为<code>/thumbnails/200x200/a/b/c.jpg</code>，将所有缩略图存储在<code>thumbnails</code>文件夹下。</p>
+<h3 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h3><p>1.客户端请求Cloudfront<br>2.Cloudfront上未命中缓存，请求S3之前执行Lambda函数，修改请求地址<br>3.获取S3响应。如果S3返回图片不存在，执行Lambda<br>4.Lambda下载原图并生成缩略图，转存至S3，将图片返回给Cloudfront<br>5.Cloudfront返回结果给客户端</p>
+<h2 id="Lambda函数"><a href="#Lambda函数" class="headerlink" title="Lambda函数"></a>Lambda函数</h2><p>代码地址：<a href="https://github.com/iyichen/lambda-thumbnail" target="_blank" rel="noopener">https://github.com/iyichen/lambda-thumbnail</a></p>
+<h3 id="源请求函数"><a href="#源请求函数" class="headerlink" title="源请求函数"></a>源请求函数</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> variables = &#123;</span><br><span class="line">    allowedDimension : [ &#123;<span class="attr">w</span>:<span class="number">75</span>,<span class="attr">h</span>:<span class="number">75</span>&#125;, &#123;<span class="attr">w</span>:<span class="number">200</span>,<span class="attr">h</span>:<span class="number">200</span>&#125;]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">exports.handler = <span class="function">(<span class="params">event, context, callback</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> request = event.Records[<span class="number">0</span>].cf.request;</span><br><span class="line">    <span class="comment">// fetch the uri of original image</span></span><br><span class="line">    <span class="keyword">let</span> fwdUri = request.uri;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> pathMatchFound = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> dimension <span class="keyword">of</span> variables.allowedDimension) &#123;</span><br><span class="line">        <span class="keyword">let</span> size = <span class="string">"_"</span> + dimension.w + <span class="string">"x"</span> + dimension.h;</span><br><span class="line">        <span class="keyword">if</span> (fwdUri.indexOf(size) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            pathMatchFound = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!pathMatchFound) &#123;</span><br><span class="line">        callback(<span class="literal">null</span>, request);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> prefix, imageName, width, height, extension;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> match = fwdUri.match(<span class="regexp">/(.*)\/(.*)_(\d+)x(\d+)\.(.*)/</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        prefix = match[<span class="number">1</span>];</span><br><span class="line">        imageName = match[<span class="number">2</span>];</span><br><span class="line">        width = match[<span class="number">3</span>];</span><br><span class="line">        height = match[<span class="number">4</span>];</span><br><span class="line">        extension = match[<span class="number">5</span>];</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"parse error. path:"</span> + fwdUri);</span><br><span class="line">        callback(<span class="literal">null</span>, request);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> matchFound = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> dimension <span class="keyword">of</span> variables.allowedDimension) &#123;</span><br><span class="line">        <span class="keyword">if</span>(dimension.w == width &amp;&amp; dimension.h == height)&#123;</span><br><span class="line">            width = dimension.w;</span><br><span class="line">            height = dimension.h;</span><br><span class="line">            matchFound = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(!matchFound)&#123;</span><br><span class="line">        callback(<span class="literal">null</span>, request);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fwdUri = <span class="string">"/thumbnails/"</span> + width + <span class="string">"x"</span> + height + prefix + <span class="string">"/"</span> + imageName + <span class="string">"."</span> + extension;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// console.log(fwdUri);</span></span><br><span class="line">    <span class="comment">// /thumbnails/200x200/images/image.jpg</span></span><br><span class="line">    request.uri = fwdUri;</span><br><span class="line">    callback(<span class="literal">null</span>, request);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>源请求函数中，我们定义了缩略图的规范(只允许<code>200x200</code>和<code>75x75</code>)，避免生成一些无意义的缩略图，当符合请求规则后，将请求地址修改。如请求地址为<code>/images/image_200x200.jpg</code>，经过函数处理后，实际请求S3的地址为<code>/thumbnails/200x200/images/image.jpg</code></p>
+<h3 id="源响应函数"><a href="#源响应函数" class="headerlink" title="源响应函数"></a>源响应函数</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">const</span> https = <span class="built_in">require</span>(<span class="string">'https'</span>);</span><br><span class="line"><span class="keyword">const</span> querystring = <span class="built_in">require</span>(<span class="string">'querystring'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> AWS = <span class="built_in">require</span>(<span class="string">'aws-sdk'</span>);</span><br><span class="line"><span class="keyword">const</span> S3 = <span class="keyword">new</span> AWS.S3(&#123;</span><br><span class="line">  signatureVersion: <span class="string">'v4'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> Sharp = <span class="built_in">require</span>(<span class="string">'sharp'</span>);</span><br><span class="line"></span><br><span class="line">exports.handler = <span class="function">(<span class="params">event, context, callback</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> response = event.Records[<span class="number">0</span>].cf.response;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// console.log("response:" + JSON.stringify(response));</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (response.status == <span class="number">403</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> request = event.Records[<span class="number">0</span>].cf.request;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// console.log("request:" + JSON.stringify(request));</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ex: uri /thumbnails/200x200/gamely/1/def1.png</span></span><br><span class="line">    <span class="keyword">let</span> path = request.uri;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"path not exist. path:"</span> + path);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!path.startsWith(<span class="string">"/thumbnails"</span>))&#123;</span><br><span class="line">        callback(<span class="literal">null</span>, response);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> bucket;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> host = request.origin.s3.domainName;</span><br><span class="line">    <span class="keyword">let</span> bucketIndex = host.indexOf(<span class="string">'.s3.amazonaws.com'</span>);</span><br><span class="line">    <span class="keyword">if</span> (bucketIndex &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        bucket = host.substring(<span class="number">0</span>, bucketIndex);</span><br><span class="line">        <span class="comment">// console.log("bucket:" + bucket);</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        callback(<span class="literal">null</span>, response);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ex: path variable /thumbnails/200x200/gamely/1/def1.png</span></span><br><span class="line">    <span class="keyword">let</span> key = path.substring(<span class="number">1</span>); <span class="comment">// thumbnails/200x200/gamely/1/def1.png</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// parse the prefix, width, height and image name</span></span><br><span class="line">    <span class="keyword">let</span> originalKey, match, width, height, requiredFormat, imageKey;</span><br><span class="line">    <span class="keyword">let</span> startIndex;</span><br><span class="line"></span><br><span class="line">    match = key.match(<span class="regexp">/thumbnails\/(\d+)x(\d+)\/((.*)\.(.*))/</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (match == <span class="literal">null</span> || match.length != <span class="number">6</span>) &#123;</span><br><span class="line">      callback(<span class="literal">null</span>, response);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">      width = <span class="built_in">parseInt</span>(match[<span class="number">1</span>], <span class="number">10</span>);</span><br><span class="line">      height = <span class="built_in">parseInt</span>(match[<span class="number">2</span>], <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">      imageKey = match[<span class="number">3</span>];</span><br><span class="line">      </span><br><span class="line">      requiredFormat = match[<span class="number">5</span>].toLowerCase();</span><br><span class="line">      requiredFormat = (requiredFormat == <span class="string">"jpg"</span> ? <span class="string">"jpeg"</span> : (requiredFormat == <span class="string">"gif"</span> ? <span class="string">"png"</span> : requiredFormat));</span><br><span class="line">      </span><br><span class="line">      originalKey = imageKey;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// console.log("args:" + originalKey + ". " + width + ". " + height + ". " + requiredFormat + ". " + imageKey);</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"parse error. path:"</span> + path);</span><br><span class="line">      callback(<span class="literal">null</span>, response);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    S3.getObject(&#123; <span class="attr">Bucket</span>: bucket, <span class="attr">Key</span>: originalKey &#125;).promise()</span><br><span class="line">      .then(<span class="function"><span class="params">data</span> =&gt;</span> Sharp(data.Body)</span><br><span class="line">        .resize(width, height)</span><br><span class="line">        .toFormat(requiredFormat)</span><br><span class="line">        .toBuffer()</span><br><span class="line">      )</span><br><span class="line">      .then(<span class="function"><span class="params">buffer</span> =&gt;</span> &#123;</span><br><span class="line">        S3.putObject(&#123;</span><br><span class="line">            Body: buffer,</span><br><span class="line">            Bucket: bucket,</span><br><span class="line">            ContentType: <span class="string">'image/'</span> + requiredFormat,</span><br><span class="line">            CacheControl: <span class="string">'max-age=2592000'</span>,</span><br><span class="line">            Key: key,</span><br><span class="line">            StorageClass: <span class="string">'STANDARD'</span></span><br><span class="line">        &#125;).promise()</span><br><span class="line">        .catch(<span class="function"><span class="params">()</span> =&gt;</span> &#123; </span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">"Exception while writing resized image to bucket. path:"</span> + path);</span><br><span class="line">          callback(<span class="literal">null</span>, response);</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        response.status = <span class="number">200</span>;</span><br><span class="line">        response.body = buffer.toString(<span class="string">'base64'</span>);</span><br><span class="line">        response.bodyEncoding = <span class="string">'base64'</span>;</span><br><span class="line">        response.headers[<span class="string">'content-type'</span>] = [&#123; <span class="attr">key</span>: <span class="string">'Content-Type'</span>, <span class="attr">value</span>: <span class="string">'image/'</span> + requiredFormat &#125;];</span><br><span class="line">        response.headers[<span class="string">'last-modified'</span>] = [&#123; <span class="attr">key</span>: <span class="string">'Last-Modified'</span>, <span class="attr">value</span>: <span class="keyword">new</span> <span class="built_in">Date</span>().toUTCString() &#125;];</span><br><span class="line">        callback(<span class="literal">null</span>, response);</span><br><span class="line">      &#125;)</span><br><span class="line">    .catch( <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"Exception while reading source image. path:"</span> + path);</span><br><span class="line">      callback(<span class="literal">null</span>, response);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125; </span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    callback(<span class="literal">null</span>, response);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在源响应函数分成以下几步：<br>1.通过源响应的返回判断图片是否存在<br>2.如果图片不存在，解析请求地址，获取原图地址和尺寸<br>3.下载原图，生成缩略图，将缩略图传至S3<br>4.返回缩略图给Cloudfront</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="设置生命周期"><a href="#设置生命周期" class="headerlink" title="设置生命周期"></a>设置生命周期</h3><p>可以对缩略图配置生命周期，到期自动删除，可以节省存储空间</p>
+<h3 id="源响应函数中response-status-403"><a href="#源响应函数中response-status-403" class="headerlink" title="源响应函数中response.status=403"></a>源响应函数中response.status=403</h3><p>在S3中，如果用户只有<code>s3:GetObject</code>权限，即使文件不存在，S3出于安全默认返回的也是403；如果需要返回404状态，需要赋予<code>s3:ListBucket</code>权限。</p>
+<h3 id="Lambda提示Sharp报错"><a href="#Lambda提示Sharp报错" class="headerlink" title="Lambda提示Sharp报错"></a>Lambda提示Sharp报错</h3><p>按照<a href="http://sharp.pixelplumbing.com/en/latest/install/#aws-lambda" target="_blank" rel="noopener">官网说明</a>，指定Lambda环境为<code>nodejs10.x</code>，修改安装命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf node_modules/sharp</span><br><span class="line">npm install --arch=x64 --platform=linux --target=10.15.0 sharp</span><br></pre></td></tr></table></figure>
+<h3 id="Sharp输出GIF格式报错"><a href="#Sharp输出GIF格式报错" class="headerlink" title="Sharp输出GIF格式报错"></a>Sharp输出GIF格式报错</h3><p><code>sharp</code>不支持<code>gif</code>，示例代码中是取<code>gif</code>第一帧图片，缩放后图片虽然后缀为<code>.gif</code>，其实格式为<code>png</code></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://amazonaws-china.com/cn/blogs/networking-and-content-delivery/resizing-images-with-amazon-cloudfront-lambdaedge-aws-cdn-blog/" target="_blank" rel="noopener">Resizing Images with Amazon CloudFront &amp; Lambda@Edge</a><br><a href="https://amazonaws-china.com/cn/blogs/networking-and-content-delivery/lambdaedge-design-best-practices/" target="_blank" rel="noopener">Lambda@Edge Design Best Practices</a><br><a href="https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/lambda-at-the-edge.html" target="_blank" rel="noopener">Lambda@Edge开发人员指南</a><br><a href="https://amazonaws-china.com/cn/blogs/networking-and-content-delivery/leveraging-external-data-in-lambdaedge/" target="_blank" rel="noopener">Leveraging external data in Lambda@Edge</a><br><a href="https://medium.com/@mnylen/lambda-edge-gotchas-and-tips-93083f8b4152" target="_blank" rel="noopener">Lambda@Edge gotchas and tips</a><br><a href="https://www.vividbytes.io/lambda-edge-image-optimizer/" target="_blank" rel="noopener">Building a Real-Time Image Optimizer Using Lambda@Edge and Amazon CloudFront</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    蛋筒冰淇淋
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iyichen.xyz/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">https://iyichen.xyz/2019/12/resizing-image-with-cloudfront-and-lambdaedge/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/aws/" rel="tag"># AWS</a>
+          
+            <a href="/tags/cloudfront/" rel="tag"># Cloudfront</a>
+          
+            <a href="/tags/lambda/" rel="tag"># Lambda</a>
+          
+            <a href="/tags/thumbnail/" rel="tag"># Thumbnail</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/resizing-image-with-s3-website/" rel="next" title="使用Amazon S3-Website生成缩略图">
+                <i class="fa fa-chevron-left"></i> 使用Amazon S3-Website生成缩略图
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/rpc-interface-design/" rel="prev" title="RPC接口设计的一些想法">
+                RPC接口设计的一些想法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="蛋筒冰淇淋">
+            
+              <p class="site-author-name" itemprop="name">蛋筒冰淇淋</p>
+              <p class="site-description motion-element" itemprop="description">得之坦然，失之淡然</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/iyichen" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:iyichen@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tutorials.jenkov.com/" title="Jenkov" target="_blank">Jenkov</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dzone.com/" title="DZone" target="_blank">DZone</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda-Edge"><span class="nav-number">1.</span> <span class="nav-text">Lambda@Edge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案架构"><span class="nav-number">2.</span> <span class="nav-text">方案架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda配置"><span class="nav-number">2.1.</span> <span class="nav-text">Lambda配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程说明"><span class="nav-number">2.2.</span> <span class="nav-text">流程说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda函数"><span class="nav-number">3.</span> <span class="nav-text">Lambda函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#源请求函数"><span class="nav-number">3.1.</span> <span class="nav-text">源请求函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源响应函数"><span class="nav-number">3.2.</span> <span class="nav-text">源响应函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">4.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置生命周期"><span class="nav-number">4.1.</span> <span class="nav-text">设置生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源响应函数中response-status-403"><span class="nav-number">4.2.</span> <span class="nav-text">源响应函数中response.status=403</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda提示Sharp报错"><span class="nav-number">4.3.</span> <span class="nav-text">Lambda提示Sharp报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sharp输出GIF格式报错"><span class="nav-number">4.4.</span> <span class="nav-text">Sharp输出GIF格式报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yichen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+<!--
+<div>
+  <a href="http://www.beian.miit.gov.cn">浙ICP备18016077号</a>
+</div>
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'sasdJibp23EOXoGvXDxUAiDQ-MdYXbMMI',
+        appKey: '3UQsz1OyMb3Knz5rERw7DixV',
+        placeholder: '说点什么吧~',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+
+    //增加以下六行代码去除 power by valine
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <!-- <script type="text/javascript" src="/js/src/custom/clicksocialvalue.js"></script>
+  <script type="text/javascript" src="/js/src/custom/clicklove.js"></script> -->
+</html>
