@@ -56,16 +56,16 @@
 <link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
 
 
@@ -82,19 +82,19 @@
 
 
 
-<meta name="description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。 微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
+<meta name="description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
 <meta name="keywords" content="Java,Wechat,Xml,3rd">
 <meta property="og:type" content="article">
 <meta property="og:title" content="微信支付API对接备注">
 <meta property="og:url" content="https://iyichen.xyz/2020/11/wechat-pay-apply-note/index.html">
 <meta property="og:site_name" content="杂货店">
-<meta property="og:description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。 微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
+<meta property="og:description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://iyichen.xyz/images/201126-head-wechat-pay.jpg">
-<meta property="og:updated_time" content="2020-11-26T12:57:38.930Z">
+<meta property="og:updated_time" content="2020-12-01T13:36:59.538Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微信支付API对接备注">
-<meta name="twitter:description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。 微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
+<meta name="twitter:description" content="本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。微信支付对接H5文档V2地址：https://pay.weixin.qq.com/wiki/doc/api/index.html">
 <meta name="twitter:image" content="https://iyichen.xyz/images/201126-head-wechat-pay.jpg">
 
 
@@ -232,6 +232,16 @@
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-追番">
+          <a href="/bangumis/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br>
+            
+            追番
           </a>
         </li>
       
@@ -399,8 +409,7 @@
 
       
         <p><img src="/images/201126-head-wechat-pay.jpg" alt="wechat-pay"></p>
-<p>本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。</p>
-<p>微信支付对接H5文档V2地址：<a href="https://pay.weixin.qq.com/wiki/doc/api/index.html" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/index.html</a></p>
+<p>本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。<br>微信支付对接H5文档V2地址：<a href="https://pay.weixin.qq.com/wiki/doc/api/index.html" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/index.html</a></p>
 <a id="more"></a>
 <h2 id="1-接口返回值乱码"><a href="#1-接口返回值乱码" class="headerlink" title="1.接口返回值乱码"></a>1.接口返回值乱码</h2><p>接口请求返回值中文乱码，类似：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">return_code</span>&gt;</span></span><br><span class="line">        &lt;![CDATA[FAIL]]&gt;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">return_code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">return_msg</span>&gt;</span></span><br><span class="line">        &lt;![CDATA[appidåmch_idä¸å¹é]]&gt;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">return_msg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -559,7 +568,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -581,7 +590,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -675,7 +684,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -696,6 +705,8 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
+
+  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--
