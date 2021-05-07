@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://iyichen.xyz/2021/05/javafx-slider-style/</loc>
+    <lastmod>2021-05-07</lastmod>
+  </url>  <url>
     <loc>https://iyichen.xyz/2021/05/javafx-use-external-font/</loc>
-    <lastmod>2021-05-06</lastmod>
+    <lastmod>2021-05-07</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2021/01/hashmap-detail-note/</loc>
     <lastmod>2021-01-11</lastmod>
@@ -61,10 +64,10 @@
     <loc>https://iyichen.xyz/2019/12/rpc-interface-design/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
-    <loc>https://iyichen.xyz/2019/06/specification-pattern-in-java/</loc>
+    <loc>https://iyichen.xyz/2019/05/spring-environment/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
-    <loc>https://iyichen.xyz/2019/05/spring-environment/</loc>
+    <loc>https://iyichen.xyz/2019/06/specification-pattern-in-java/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2019/10/jmx-monitoring-jvm/</loc>
@@ -73,10 +76,10 @@
     <loc>https://iyichen.xyz/2019/09/learning-pf4j/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
-    <loc>https://iyichen.xyz/2019/10/mac-compile-openjdk/</loc>
+    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
-    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
+    <loc>https://iyichen.xyz/2019/10/mac-compile-openjdk/</loc>
     <lastmod>2020-10-29</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2020/05/manacher-intro/</loc>
