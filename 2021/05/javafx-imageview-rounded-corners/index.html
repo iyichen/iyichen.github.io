@@ -71,7 +71,7 @@
 
 
 
-  <meta name="keywords" content="Go,Translation,Design,Thinking,">
+  <meta name="keywords" content="Java,JavaFX,Memo,">
 
 
 
@@ -82,20 +82,20 @@
 
 
 
-<meta name="description" content="关于Go项目的结构设计，推荐先观看 Kat Zien 关于Go项目结构设计的演讲：https://www.youtube.com/watch?v=oL6JBUk6tj0">
-<meta name="keywords" content="Go,Translation,Design,Thinking">
+<meta name="keywords" content="Java,JavaFX,Memo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[译] Go项目结构设计最佳实践">
-<meta property="og:url" content="https://iyichen.xyz/2020/03/go-project-structure-best-practices/index.html">
+<meta property="og:title" content="JavaFX ImageView生成圆角">
+<meta property="og:url" content="https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/index.html">
 <meta property="og:site_name" content="杂货店">
-<meta property="og:description" content="关于Go项目的结构设计，推荐先观看 Kat Zien 关于Go项目结构设计的演讲：https://www.youtube.com/watch?v=oL6JBUk6tj0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://iyichen.xyz/images/200330-head-go-structure.jpg">
-<meta property="og:updated_time" content="2020-10-29T13:09:09.657Z">
+<meta property="og:image" content="https://iyichen.xyz/images/c-javafx.png">
+<meta property="og:image" content="https://iyichen.xyz/images/210512-01.png">
+<meta property="og:image" content="https://iyichen.xyz/images/210512-02.png">
+<meta property="og:image" content="https://iyichen.xyz/images/210512-03.png">
+<meta property="og:updated_time" content="2021-05-12T06:34:29.546Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[译] Go项目结构设计最佳实践">
-<meta name="twitter:description" content="关于Go项目的结构设计，推荐先观看 Kat Zien 关于Go项目结构设计的演讲：https://www.youtube.com/watch?v=oL6JBUk6tj0">
-<meta name="twitter:image" content="https://iyichen.xyz/images/200330-head-go-structure.jpg">
+<meta name="twitter:title" content="JavaFX ImageView生成圆角">
+<meta name="twitter:image" content="https://iyichen.xyz/images/c-javafx.png">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="https://iyichen.xyz/2020/03/go-project-structure-best-practices/">
+  <link rel="canonical" href="https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/">
 
 
 
 
 
-  <title>[译] Go项目结构设计最佳实践 | 杂货店</title>
+  <title>JavaFX ImageView生成圆角 | 杂货店</title>
   
 
 
@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2020/03/go-project-structure-best-practices/">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="蛋筒冰淇淋">
@@ -305,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[译] Go项目结构设计最佳实践</h1>
+          <h1 class="post-title" itemprop="name headline">JavaFX ImageView生成圆角</h1>
         
 
         <div class="post-meta">
@@ -317,8 +317,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-30T00:00:00+08:00">
-                2020-03-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-12T00:00:00+08:00">
+                2021-05-12
               </time>
             
 
@@ -340,8 +340,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/thinking/" itemprop="url" rel="index">
-                    <span itemprop="name">Thinking</span>
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
                   </a>
                 </span>
 
@@ -371,7 +371,7 @@
                   <span class="post-meta-item-text">本文字数&#58;</span>
                 
                 <span title="本文字数">
-                  1k
+                  286
                 </span>
               
 
@@ -387,7 +387,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3 分钟
+                  1 分钟
                 </span>
               
             </div>
@@ -408,47 +408,21 @@
       
 
       
-        <p><img src="/images/200330-head-go-structure.jpg" alt="jmx"></p>
-<p>关于Go项目的结构设计，推荐先观看 <a href="https://www.youtube.com/watch?v=oL6JBUk6tj0" target="_blank" rel="noopener">Kat Zien 关于Go项目结构设计的演讲：https://www.youtube.com/watch?v=oL6JBUk6tj0</a></p>
+        <p><img src="/images/c-javafx.png" alt=""></p>
 <a id="more"></a>
-<p><strong>本文内容整理自 <a href="https://tutorialedge.net/golang/go-project-structure-best-practices/" target="_blank" rel="noopener">Elliot Forbes: Go Project Structure Best Practices</a></strong></p>
-<p><strong>以下为部分译文：</strong></p>
-<p>Go应用程序应该遵循的项目结构是一个有争议的主题，因为Go项目结构并没有统一规范。很多人认为应该遵循 <a href="https://github.com/golang-standards/project-layout" target="_blank" rel="noopener">golang-standards / project-layout</a> 结构，但是随着Go Modules成为处理Go依赖关系的标准，这种结构开始面临挑战。按照传统结构，您会发现项目结构中的某些包并没有访问权限，如 <code>internal</code> 或 <code>pkg</code>，而一旦要处理起来也是非常的棘手。</p>
-<blockquote>
-<p>在构建应用程序时，没有一劳永逸的方法。随着应用程序的发展，项目结构也在不断发展。</p>
-</blockquote>
-<p>在本文中，我将介绍在构建Go应用程序时可以选择的项目结构。</p>
-<h2 id="小型应用-平面结构"><a href="#小型应用-平面结构" class="headerlink" title="小型应用 - 平面结构"></a>小型应用 - 平面结构</h2><p>这种项目结构清晰简单，不需要花费太多的时间去整理项目结构，同时作为开发人员，可以尽可能的专注于完成目标功能。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">application/</span><br><span class="line"> - main.go</span><br><span class="line"> - main_test.go</span><br><span class="line"> - utils.go</span><br><span class="line"> - utils_test.go</span><br><span class="line"> - ...</span><br></pre></td></tr></table></figure>
-<p>这种项目结构适用于以下应用：</p>
-<ul>
-<li><strong>微服务</strong> -  实现单一功能的应用程序</li>
-<li><strong>小型工具库</strong> - 用于完成少数任务的命令行工具或小型工具库</li>
-</ul>
-<h3 id="应用例子"><a href="#应用例子" class="headerlink" title="应用例子"></a>应用例子</h3><p>一些使用这种项目结构的例子：</p>
-<ul>
-<li><strong><a href="https://github.com/tidwall/gjson" target="_blank" rel="noopener">tidwall / gjson</a></strong></li>
-<li><strong><a href="https://github.com/go-yaml/yaml" target="_blank" rel="noopener">go-yaml / yaml</a></strong></li>
-</ul>
-<h2 id="中大型应用-模块化"><a href="#中大型应用-模块化" class="headerlink" title="中大型应用 - 模块化"></a>中大型应用 - 模块化</h2><p>随着项目规模变大，复杂性增长，您很快就会发现它开始超出平面结构，这时就应该开始考虑模块化了。</p>
-<p>以网站的REST API为例，假设该REST API需要提供注册和登录功能，以及需要类似CRUD方式处理用户文章的功能。这时我们需要考虑将应用程序按照功能分组，并尽可能的把不同组件之间共享的核心逻辑放到项目的共享包中。</p>
-<p>此时项目结构可能会变成这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rest-api/</span><br><span class="line">- main.go</span><br><span class="line">- user/</span><br><span class="line">- - user.go</span><br><span class="line">- - login.go</span><br><span class="line">- - registration.go</span><br><span class="line">- articles/</span><br><span class="line">- - articles.go</span><br><span class="line">- utils/</span><br><span class="line">- - common_utils.go</span><br></pre></td></tr></table></figure>
-<h3 id="应用例子-1"><a href="#应用例子-1" class="headerlink" title="应用例子"></a>应用例子</h3><ul>
-<li><strong><a href="https://github.com/google/go-cloud" target="_blank" rel="noopener">google / go-cloud</a></strong> - 这是采用此结构的项目中一个很好的例子。项目被分解为每个IAAS云提供商的程序包，并且每个程序包都包含与该特定云提供商有关的所有代码。</li>
-<li><strong><a href="https://github.com/hashicorp/consul" target="_blank" rel="noopener">hashicorp / consul</a></strong> - 这是使用模块化大型项目中另一个很好的例子。</li>
-<li><strong><a href="https://github.com/ipfs/go-ipfs" target="_blank" rel="noopener">ipfs / go-ipfs</a></strong> - 全局版本化的对等文件系统</li>
-<li><strong><a href="https://github.com/gohugoio/hugo" target="_blank" rel="noopener">gohugoio / hugo</a></strong> - 快速灵活的静态站点生成器</li>
-</ul>
-<h2 id="成熟的应用"><a href="#成熟的应用" class="headerlink" title="成熟的应用"></a>成熟的应用</h2><p>您一定会看到符合旧结构的项目，但这些项目是属于Go早期版本的产品。</p>
-<p>如 Hashicorp 的 Terraform 或 Google 自己的 Kubernetes 之类的大型应用程序往往会保留旧结构，因为这些项目是<code>$GOPATH</code>统治时代的产品，您会看到它们仍然具有<code>internal</code>和<code>pkg</code>文件夹，其中封装了项目的某些内部工作。</p>
-<ul>
-<li><strong><a href="https://github.com/hashicorp/terraform/tree/master/terraform" target="_blank" rel="noopener">hashicorp / terraform</a></strong></li>
-<li><strong><a href="https://github.com/kubernetes/kubernetes" target="_blank" rel="noopener">Kubernetes / kubernetes</a></strong></li>
-</ul>
-<p>这种结构项目运行得非常好，使开发人员能够为开发社区带来不可思议的价值，但我认为，随着Go Modules开始变得越来越流行，我们将会看到这些应用程序从传统的结构迁移到新的结构。</p>
-<h2 id="拆分项目"><a href="#拆分项目" class="headerlink" title="拆分项目"></a>拆分项目</h2><p>在特定的时间点后，将项目中的某些部分从原项目中拆分出来，创建新的项目独立维护，可能是非常有意义的。虽然可能导致管理项目需要使用额外的开销，但是这也意味着对想要贡献和帮助项目的新手来说更加友好。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这些是我日常工作中的开发经验，希望本文对您的开发工作有所帮助，并在您开始为下一个Go项目建模时提供一些想法！</p>
+<p>本文以使用 <code>ImageView</code> 创建用户头像为例</p>
+<h2 id="默认样式"><a href="#默认样式" class="headerlink" title="默认样式"></a>默认样式</h2><p>先看下默认样式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageDemo</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(Stage stage)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        VBox root = <span class="keyword">new</span> VBox();</span><br><span class="line">        root.setAlignment(Pos.CENTER);</span><br><span class="line">        root.setSpacing(<span class="number">20</span>);</span><br><span class="line"></span><br><span class="line">      	<span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">        ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">        cover.setFitWidth(size);</span><br><span class="line">        cover.setFitHeight(size);</span><br><span class="line">        </span><br><span class="line">        root.getChildren().add(cover);</span><br><span class="line"></span><br><span class="line">        Scene scene = <span class="keyword">new</span> Scene(root, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">        scene.getStylesheets().add(<span class="keyword">this</span>.getClass().getResource(<span class="string">"/css/style.css"</span>).toExternalForm());</span><br><span class="line">        stage.setScene(scene);</span><br><span class="line">        stage.setTitle(<span class="string">"Image Demo"</span>);</span><br><span class="line">        scene.setRoot(root);</span><br><span class="line">        stage.show();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        launch(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行效果：</p>
+<p><img src="/images/210512-01.png" alt="210512-01"></p>
+<h2 id="修改圆角"><a href="#修改圆角" class="headerlink" title="修改圆角"></a>修改圆角</h2><p>圆角效果可以使用 <code>ImageView.clip()</code> 方法完成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">cover.setFitWidth(size);</span><br><span class="line">cover.setFitHeight(size);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置圆角弧宽高为0.25=arc/size</span></span><br><span class="line"><span class="keyword">int</span> arc = <span class="number">25</span>;</span><br><span class="line">Rectangle clip = <span class="keyword">new</span> Rectangle(cover.getFitWidth(), cover.getFitHeight());</span><br><span class="line">clip.setArcWidth(arc);</span><br><span class="line">clip.setArcHeight(arc);</span><br><span class="line">cover.setClip(clip);</span><br></pre></td></tr></table></figure>
+<p>将圆角弧度设置为 <code>25</code> 后：</p>
+<p><img src="/images/210512-02.png" alt="210512-02"></p>
+<h2 id="设置为圆形"><a href="#设置为圆形" class="headerlink" title="设置为圆形"></a>设置为圆形</h2><p>圆形头像可以设置弧宽高为头像的宽高，即设置为 <code>1</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">cover.setFitWidth(size);</span><br><span class="line">cover.setFitHeight(size);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置圆角弧宽高为1=arc/size</span></span><br><span class="line"><span class="keyword">int</span> arc = <span class="number">100</span>;</span><br><span class="line">Rectangle clip = <span class="keyword">new</span> Rectangle(cover.getFitWidth(), cover.getFitHeight());</span><br><span class="line">clip.setArcWidth(arc);</span><br><span class="line">clip.setArcHeight(arc);</span><br><span class="line">cover.setClip(clip);</span><br></pre></td></tr></table></figure>
+<p>圆形效果：</p>
+<p><img src="/images/210512-03.png" alt="210512-03"></p>
 
       
     </div>
@@ -469,7 +443,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://iyichen.xyz/2020/03/go-project-structure-best-practices/" title="[译] Go项目结构设计最佳实践">https://iyichen.xyz/2020/03/go-project-structure-best-practices/</a>
+    <a href="https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/" title="JavaFX ImageView生成圆角">https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -484,13 +458,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/go/" rel="tag"># Go</a>
+            <a href="/tags/java/" rel="tag"># Java</a>
           
-            <a href="/tags/translation/" rel="tag"># Translation</a>
+            <a href="/tags/javafx/" rel="tag"># JavaFX</a>
           
-            <a href="/tags/design/" rel="tag"># Design</a>
-          
-            <a href="/tags/thinking/" rel="tag"># Thinking</a>
+            <a href="/tags/memo/" rel="tag"># Memo</a>
           
         </div>
       
@@ -503,8 +475,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/02/go-in-action-note/" rel="next" title="Go语言入门">
-                <i class="fa fa-chevron-left"></i> Go语言入门
+              <a href="/2021/05/javafx-tableview-style/" rel="next" title="JavaFX表格样式">
+                <i class="fa fa-chevron-left"></i> JavaFX表格样式
               </a>
             
           </div>
@@ -512,10 +484,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/04/talk-about-aoi/" rel="prev" title="聊聊游戏中的AOI">
-                聊聊游戏中的AOI <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -686,7 +654,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#小型应用-平面结构"><span class="nav-number">1.</span> <span class="nav-text">小型应用 - 平面结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用例子"><span class="nav-number">1.1.</span> <span class="nav-text">应用例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中大型应用-模块化"><span class="nav-number">2.</span> <span class="nav-text">中大型应用 - 模块化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用例子-1"><span class="nav-number">2.1.</span> <span class="nav-text">应用例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成熟的应用"><span class="nav-number">3.</span> <span class="nav-text">成熟的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拆分项目"><span class="nav-number">4.</span> <span class="nav-text">拆分项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认样式"><span class="nav-number">1.</span> <span class="nav-text">默认样式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改圆角"><span class="nav-number">2.</span> <span class="nav-text">修改圆角</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置为圆形"><span class="nav-number">3.</span> <span class="nav-text">设置为圆形</span></a></li></ol></div>
             
 
           </div>
