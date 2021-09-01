@@ -82,17 +82,17 @@
 
 
 
-<meta name="description" content="得之坦然，失之淡然">
+<meta name="description" content="一个空想主义者">
 <meta name="keywords" content="blog,coding,programming,learning">
 <meta property="og:type" content="website">
 <meta property="og:title" content="杂货店">
 <meta property="og:url" content="https://iyichen.xyz/page/3/index.html">
 <meta property="og:site_name" content="杂货店">
-<meta property="og:description" content="得之坦然，失之淡然">
+<meta property="og:description" content="一个空想主义者">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="杂货店">
-<meta name="twitter:description" content="得之坦然，失之淡然">
+<meta name="twitter:description" content="一个空想主义者">
 
 
 
@@ -272,6 +272,185 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="蛋筒冰淇淋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杂货店">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/resizing-image-with-s3-website/" itemprop="url">使用Amazon S3-Website生成缩略图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-18T00:00:00+08:00">
+                2019-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><img src="/images/191218-head-apigateway.png" alt="191218-head-apigateway"></p>
+<p>上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为<strong>S3静态网站地址</strong>。</p>
+<p>S3静态网站地址格式：<code>{bucketName}.s3-website-{region}.amazonaws.com</code><br>S3地址格式：<code>{bucketName}.s3-{region}.amazonaws.com</code></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/resizing-image-with-s3-website/" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1887,184 +2066,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/04/consistent-hashing-java/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="蛋筒冰淇淋">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/zm.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="杂货店">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/consistent-hashing-java/" itemprop="url">一致性哈希(Consistent Hashing)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-29T00:00:00+08:00">
-                2019-04-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/learning/" itemprop="url" rel="index">
-                    <span itemprop="name">Learning</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">本文字数&#58;</span>
-                
-                <span title="本文字数">
-                  1.7k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  7 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一致性Hash算法"><a href="#一致性Hash算法" class="headerlink" title="一致性Hash算法"></a>一致性Hash算法</h2><h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>在使用n台缓存服务器时，一种常见的负载均衡的做法是：对资源o的请求做<code>hash(o) mod n</code>，来决定映射的到的服务器。当需要增加或减少缓存服务器时，最糟糕的情况是，因为所有<code>hash(o) mod n</code>值被改变，导致所有缓存失效。</p>
-<p>一致性哈希要求在服务器数量变化时，也尽量使同一个资源的请求，落在同一台服务器上。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/04/consistent-hashing-java/" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2107,7 +2108,7 @@
               <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="蛋筒冰淇淋">
             
               <p class="site-author-name" itemprop="name">蛋筒冰淇淋</p>
-              <p class="site-description motion-element" itemprop="description">得之坦然，失之淡然</p>
+              <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -2117,7 +2118,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2128,7 +2129,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2139,7 +2140,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
