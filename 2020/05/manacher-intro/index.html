@@ -90,19 +90,19 @@
 <meta property="og:site_name" content="杂货店">
 <meta property="og:description" content="马拉车算法 (Manacher’s Algorithm) 主要用于处理字符串中的回文串，它可以在的O(n)时间里计算出以每个字符为中心的最长回文字符串。  回文，英文palindrome，指一个顺着读和反过来读都一样的字符串，如”abba”、“abccba”、12321、123321都是回文，而“abcde”和“ababab”则不是回文。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-head-manacher.jpg">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-01.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-02.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-03.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-04.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-05.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-06.png">
-<meta property="og:image" content="https://iyichen.xyz/images/200520-manacher-07.png">
-<meta property="og:updated_time" content="2020-10-29T13:09:09.658Z">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-head-manacher.jpg">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-01.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-02.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-03.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-04.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-05.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-06.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/200520-manacher-07.png">
+<meta property="og:updated_time" content="2021-09-02T11:21:59.973Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Manacher 算法">
 <meta name="twitter:description" content="马拉车算法 (Manacher’s Algorithm) 主要用于处理字符串中的回文串，它可以在的O(n)时间里计算出以每个字符为中心的最长回文字符串。  回文，英文palindrome，指一个顺着读和反过来读都一样的字符串，如”abba”、“abccba”、12321、123321都是回文，而“abcde”和“ababab”则不是回文。">
-<meta name="twitter:image" content="https://iyichen.xyz/images/200520-head-manacher.jpg">
+<meta name="twitter:image" content="https://image.iyichen.xyz/blog/200520-head-manacher.jpg">
 
 
 
@@ -415,32 +415,32 @@
       
 
       
-        <p><img src="/images/200520-head-manacher.jpg" alt="200520-head-manacher"></p>
+        <p><img src="https://image.iyichen.xyz/blog/200520-head-manacher.jpg" alt="200520-head-manacher"></p>
 <p>马拉车算法 (Manacher’s Algorithm) 主要用于处理字符串中的回文串，它可以在的<code>O(n)</code>时间里计算出以每个字符为中心的最长回文字符串。</p>
 <blockquote>
 <p>回文，英文palindrome，指一个顺着读和反过来读都一样的字符串，如”abba”、“abccba”、12321、123321都是回文，而“abcde”和“ababab”则不是回文。</p>
 </blockquote>
 <a id="more"></a>
 <h2 id="中心扩展"><a href="#中心扩展" class="headerlink" title="中心扩展"></a>中心扩展</h2><p>要获取字符串中的最长回文字符串，我们可以使用中心扩展法，即遍历字符串中的每一个字符，并以该字符为中心，同时向左右两边扩展，通过判断左右两边字符是否相同，获取到以该字符为中心的最长回文字符串：</p>
-<p><img src="/images/200520-manacher-01.png" alt="200520-manacher-01"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-01.png" alt="200520-manacher-01"></p>
 <p>但是，如果回文字符串长度为偶数的情况下，就需要以当前字符和相邻右侧的字符整体为中心进行扩展：</p>
-<p><img src="/images/200520-manacher-02.png" alt="200520-manacher-02"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-02.png" alt="200520-manacher-02"></p>
 <h3 id="实现-java"><a href="#实现-java" class="headerlink" title="实现(java)"></a>实现(java)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该方法的时间复杂度为 O(n²)</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getPalindromeMaxLen</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (str == <span class="keyword">null</span> || str.isEmpty()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> start = <span class="number">0</span>, end = <span class="number">1</span>; <span class="comment">// 默认回文长度1 end-start</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; str.length(); i++) &#123;</span><br><span class="line">    <span class="keyword">int</span> s = cal(str, i, i); <span class="comment">// 奇数长度回文 aba</span></span><br><span class="line">    <span class="keyword">int</span> d = cal(str, i, i + <span class="number">1</span>); <span class="comment">// 偶数长度回文 abba</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> r = Math.max(s, d);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (r &gt; end - start) &#123;</span><br><span class="line">      start = i - (r - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">      end = start + r;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 输出最长回文长度 和 最长回文字符串</span></span><br><span class="line">  System.out.println(<span class="string">"len: "</span> + (end - start) + <span class="string">". str: "</span> + str.substring(start, end));</span><br><span class="line">  <span class="keyword">return</span> end - start;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">cal</span><span class="params">(String s, <span class="keyword">int</span> centerLeft, <span class="keyword">int</span> centerRight)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> left = centerLeft;</span><br><span class="line">  <span class="keyword">int</span> right = centerRight;</span><br><span class="line">  <span class="keyword">while</span> (left &gt;= <span class="number">0</span> &amp;&amp; right &lt; s.length() &amp;&amp; s.charAt(left) == s.charAt(right)) &#123;</span><br><span class="line">    left--;</span><br><span class="line">    right++;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> (right - <span class="number">1</span>) - (left + <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="解决回文长度奇偶问题"><a href="#解决回文长度奇偶问题" class="headerlink" title="解决回文长度奇偶问题"></a>解决回文长度奇偶问题</h2><p>可以看到中心扩展最大的问题，是对每一个字符都要按照奇偶分别处理，因此Manacher算法的第一步处理，就是在字符串每个字符中间插入特殊分隔字符 (如<code>#</code>)：</p>
-<p><img src="/images/200520-manacher-03.png" alt="200520-manacher-03"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-03.png" alt="200520-manacher-03"></p>
 <p>可以看到处理后的回文字符串，都变成了奇数长度，在这种情况下，如果把特殊字符也看做是字符串的一部分，那么中心扩展只需要计算奇数长度的回文即可。</p>
 <h2 id="计算最长回文"><a href="#计算最长回文" class="headerlink" title="计算最长回文"></a>计算最长回文</h2><p>对处理后的字符串前后添加不同标识符 (如 <code>^</code> 和 <code>$</code>)，这样可以不用考虑到达边界的问题 (因为边界字符和分隔字符不同)，以字符<code>CBCBCBB</code>为例：</p>
-<p><img src="/images/200520-manacher-04.png" alt="200520-manacher-04"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-04.png" alt="200520-manacher-04"></p>
 <p>同时可以看到，<code>P[i]</code>其实就是对应原字符串中以每个字符为中心的最大回文长度，以<code>T[10]=C</code>为例，可以看到<code>P[10]=3</code> (对应回文 <code>#B#C#B#</code>)，正好对应原字符串中最大回文长度 (<code>BCB</code>)。</p>
 <p>对于如何计算<code>P[i]</code>，可以从左到右遍历所有字符，使用中心扩展法。但也可以从回文的特性出发，因为如果字符串是回文，那么必然是以中心字符<code>C</code>，<code>R</code>为半径，左右对称的字符串，在这种情况下，如果<code>C</code>左侧字符我们已经计算过回文长度半径，那是否可以直接将这个值直接映射到<code>C</code>右侧对应字符？如果这样，那么可以减少使用很多次的中心扩展法。</p>
 <p>假设我们现在已经通过中心扩展法计算出了<code>P[8]=6</code>，那么我们可以以当前 <code>i=8</code> 为中心，计算出右半径位置<code>RP:i=14</code>以及左半径对应位置 <code>LP:i=2</code> ：</p>
-<p><img src="/images/200520-manacher-05.png" alt="200520-manacher-05"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-05.png" alt="200520-manacher-05"></p>
 <p>接下去我们要计算的就是 <code>i&gt;8</code> 的情况，可以知道 <code>i</code> 必然是在 <code>CP</code> 右侧：</p>
 <h3 id="i在CP和RP之间"><a href="#i在CP和RP之间" class="headerlink" title="i在CP和RP之间"></a>i在CP和RP之间</h3><p>以 <code>i=11</code> 为例，可以计算出对应的映射位置为 <code>i=5</code>。</p>
 <p>如果 <code>P[5]=1</code>，那么我们可以直接得出 <code>P[11]=1</code> ：</p>
-<p><img src="/images/200520-manacher-06.png" alt="200520-manacher-06"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-06.png" alt="200520-manacher-06"></p>
 <p>如果 <code>P[4]=3</code>，那不能直接认为 <code>P[12]=3</code>，因为<code>P[4]</code>的回文半径位置不在<code>[LP, CP]</code>之间，所以无法直接判定 <code>T[9]=T[15]</code>，或者换种思考方法，如果 <code>P[12]=3</code>，则 <code>T[9]=T[15]</code>，而 <code>T[9]=T[7]</code>，也就是 <code>T[1]=T[15]</code>，那么 <code>P[8]=7</code>，和条件中 <code>P[8]=6</code>冲突。因此在这种情况下，我们只能首先判定为 <code>P[12]=2</code> (在<code>R</code>半径内是回文)，然后在此基础上继续向左右扩展：</p>
-<p><img src="/images/200520-manacher-07.png" alt="200520-manacher-07"></p>
+<p><img src="https://image.iyichen.xyz/blog/200520-manacher-07.png" alt="200520-manacher-07"></p>
 <p>总结来说，当 <code>i</code> 在  <code>RP</code> 左侧时，我们只能首先获取到 <code>P[i]</code> 的初始值 ( <code>P[i]=min(RP-i, P[CP-(i-CP)]</code>)，然后在此基础上继续向左右扩展，直到比较到不同的字符。</p>
 <h3 id="i在RP右侧"><a href="#i在RP右侧" class="headerlink" title="i在RP右侧"></a>i在RP右侧</h3><p>这种情况下，说明 <code>i</code> 已经不在 <code>CP</code>为中心的回文内了，只能使用中心扩展法计算。</p>
 <h3 id="更新C和R"><a href="#更新C和R" class="headerlink" title="更新C和R"></a>更新C和R</h3><p>如果我们要使用镜像映射计算<code>P[i]</code>，那就需要尽量保证 <code>i</code>在 <code>RP</code>左侧，因而一旦 <code>P[i] + i &gt; RP</code>时，我们就需要更新 <code>C(CP)</code> 和 <code>R(RP)</code>。</p>
