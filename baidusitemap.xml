@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://iyichen.xyz/2021/09/centos-update-locale/</loc>
+    <lastmod>2021-09-18</lastmod>
+  </url>  <url>
+    <loc>https://iyichen.xyz/2019/09/matrix-uris/</loc>
+    <lastmod>2021-09-18</lastmod>
+  </url>  <url>
     <loc>https://iyichen.xyz/2020/05/varint-zigzag-intro/</loc>
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
@@ -32,9 +38,6 @@
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2020/05/manacher-intro/</loc>
-    <lastmod>2021-09-02</lastmod>
-  </url>  <url>
-    <loc>https://iyichen.xyz/2019/09/matrix-uris/</loc>
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2020/09/mysql-datetime-to-date/</loc>

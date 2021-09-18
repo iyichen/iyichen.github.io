@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://iyichen.xyz/2021/09/centos-update-locale/</loc>
+    
+    <lastmod>2021-09-18T08:54:53.059Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://iyichen.xyz/2019/09/matrix-uris/</loc>
+    
+    <lastmod>2021-09-18T07:48:58.118Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://iyichen.xyz/2020/05/varint-zigzag-intro/</loc>
     
     <lastmod>2021-09-02T11:22:09.489Z</lastmod>
@@ -75,13 +89,6 @@
     <loc>https://iyichen.xyz/2020/05/manacher-intro/</loc>
     
     <lastmod>2021-09-02T11:21:59.973Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://iyichen.xyz/2019/09/matrix-uris/</loc>
-    
-    <lastmod>2021-09-02T11:21:59.482Z</lastmod>
     
   </url>
   
@@ -240,14 +247,14 @@
   </url>
   
   <url>
-    <loc>https://iyichen.xyz/bookmark/index.html</loc>
+    <loc>https://iyichen.xyz/categories/index.html</loc>
     
     <lastmod>2020-10-29T13:09:09.661Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://iyichen.xyz/categories/index.html</loc>
+    <loc>https://iyichen.xyz/bookmark/index.html</loc>
     
     <lastmod>2020-10-29T13:09:09.661Z</lastmod>
     
