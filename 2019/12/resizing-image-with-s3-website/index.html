@@ -71,7 +71,7 @@
 
 
 
-  <meta name="keywords" content="AWS,S3,Lambda,Thumbnail,APIGateway,">
+  <meta name="keywords" content="AWS,Lambda,Thumbnail,S3,APIGateway,">
 
 
 
@@ -83,7 +83,7 @@
 
 
 <meta name="description" content="上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为S3静态网站地址。 S3静态网站地址格式：{bucketName}.s3-website-{region}.amazonaws">
-<meta name="keywords" content="AWS,S3,Lambda,Thumbnail,APIGateway">
+<meta name="keywords" content="AWS,Lambda,Thumbnail,S3,APIGateway">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Amazon S3-Website生成缩略图">
 <meta property="og:url" content="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/index.html">
@@ -474,11 +474,11 @@
           
             <a href="/tags/aws/" rel="tag"># AWS</a>
           
-            <a href="/tags/s3/" rel="tag"># S3</a>
-          
             <a href="/tags/lambda/" rel="tag"># Lambda</a>
           
             <a href="/tags/thumbnail/" rel="tag"># Thumbnail</a>
+          
+            <a href="/tags/s3/" rel="tag"># S3</a>
           
             <a href="/tags/apigateway/" rel="tag"># APIGateway</a>
           
@@ -493,8 +493,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" rel="next" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
-                <i class="fa fa-chevron-left"></i> 使用Amazon Cloudfront+Lambda@Edge生成缩略图
+              <a href="/2019/10/jmx-monitoring-jvm/" rel="next" title="JMX简单使用">
+                <i class="fa fa-chevron-left"></i> JMX简单使用
               </a>
             
           </div>
@@ -503,8 +503,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/12/rpc-interface-design/" rel="prev" title="RPC接口设计的一些想法">
-                RPC接口设计的一些想法 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" rel="prev" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
+                使用Amazon Cloudfront+Lambda@Edge生成缩略图 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -703,7 +703,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -725,7 +725,7 @@
 
 
 
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
+  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a><a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备18016077号</a></div>
 
 
 <!--
