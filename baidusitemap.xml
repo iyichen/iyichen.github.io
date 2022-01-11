@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://iyichen.xyz/2022/01/hexo-leancloud-valine-access-fail/</loc>
+    <lastmod>2022-01-11</lastmod>
+  </url>  <url>
+    <loc>https://iyichen.xyz/2021/09/intellij-idea-thread-debug-tips/</loc>
+    <lastmod>2022-01-11</lastmod>
+  </url>  <url>
     <loc>https://iyichen.xyz/2021/09/centos-update-locale/</loc>
     <lastmod>2021-09-18</lastmod>
   </url>  <url>
@@ -89,9 +95,6 @@
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2021/01/hashmap-detail-note/</loc>
-    <lastmod>2021-09-02</lastmod>
-  </url>  <url>
-    <loc>https://iyichen.xyz/2021/09/intellij-idea-thread-debug-tips/</loc>
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2019/01/test-blog/</loc>

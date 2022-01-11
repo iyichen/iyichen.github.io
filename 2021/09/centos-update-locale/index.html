@@ -490,6 +490,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2022/01/hexo-leancloud-valine-access-fail/" rel="prev" title="Hexo使用国际版LeanCloud Valine评论连接失败">
+                Hexo使用国际版LeanCloud Valine评论连接失败 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -570,7 +574,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -592,7 +596,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -858,9 +862,9 @@
 
 
 
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <!-- <script src="//unpkg.com/valine/dist/Valine.min.js"></script> -->
-  <script src="/js/src/Valine.min.js"></script>
+  <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <!-- <script src="/js/src/Valine.min.js"></script> -->
   
   <script type="text/javascript">
     var GUEST = ['nick','mail','link'];
@@ -878,6 +882,7 @@
         avatar:'mm',
         guest_info:guest,
         pageSize:'10' || 10,
+        serverURLs: 'https://sasdjibp.api.lncldglobal.com',
     });
 
     //增加以下六行代码去除 power by valine
