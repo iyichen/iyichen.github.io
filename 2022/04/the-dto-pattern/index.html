@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+
+
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Spring,DesignPatterns,DTO,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
+<meta name="keywords" content="Java,Spring,DesignPatterns,DTO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DTO设计模式">
+<meta property="og:url" content="https://iyichen.xyz/2022/04/the-dto-pattern/index.html">
+<meta property="og:site_name" content="杂货店">
+<meta property="og:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220416-dto.svg">
+<meta property="og:updated_time" content="2022-04-16T16:21:36.087Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DTO设计模式">
+<meta name="twitter:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
+<meta name="twitter:image" content="https://image.iyichen.xyz/blog/2022/220416-dto.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://iyichen.xyz/2022/04/the-dto-pattern/">
+
+
+
+
+
+  <title>DTO设计模式 | 杂货店</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?00f982f755818931cf2f1dc7bc1d7aa3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杂货店</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">得之坦然，失之淡然</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-追番">
+          <a href="/bangumis/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br>
+            
+            追番
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/04/the-dto-pattern/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="蛋筒冰淇淋">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杂货店">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DTO设计模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-16T00:00:00+08:00">
+                2022-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  1.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文翻译自 <a href="https://www.baeldung.com/java-dto-pattern" target="_blank" rel="noopener">The DTO Pattern (Data Transfer Object)</a></p>
+</blockquote>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在本文中，我们将讨论 <a href="https://martinfowler.com/eaaCatalog/dataTransferObject.html" target="_blank" rel="noopener">DTO模式</a>，包括它是什么，何时去使用它，以及如何正确的使用它。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>DTO模式首次被提出来是在 Martin Fowler 的 <a href="https://martinfowler.com/books/eaa.html" target="_blank" rel="noopener">EAA</a> 一书中，<strong>DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。</strong></p>
+<a id="more"></a>
+<p>根据 Martin Fowler 的解释，该模式的主要目的是通过在一次调用中批量处理多个命令参数，从而减少请求服务器的次数，进而减少远程操作的网络开销。</p>
+<p>该模式的另一个好处是对序列化的逻辑（序列化是指将对象的结构和数据转换为特定模式用来存储或者传输的机制）进行了封装，提供了单一的变化点去修改序列化的逻辑。它还可以将领域模型与表现层解耦，允许两者独立变化而不互相影响。</p>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p>DTOs 通常是作为 POJO 创建的。两者都是<strong>扁平的数据结构，不包含业务逻辑，</strong>只包含存储、访问器和序列化或解析有关的方法。</p>
+<p>DTOs 数据通常是通过表现层或门面层的映射组件，从 <a href="https://martinfowler.com/eaaCatalog/domainModel.html" target="_blank" rel="noopener">领域模型</a> 映射产生的。</p>
+<p>下图说明了组件之间的联系：</p>
+<p><img src="https://image.iyichen.xyz/blog/2022/220416-dto.svg" alt="dto模式"></p>
+<h2 id="何时使用"><a href="#何时使用" class="headerlink" title="何时使用"></a>何时使用</h2><p>在远程调用的系统中很有用，因为 DTOs 有助于减少远程调用的次数。</p>
+<p>当领域模型由很多对象组成，并且展示模型需要一次性使用到所有数据时，DTOs 也很有帮助，同时甚至可以减少客户端与服务端之间的请求次数。</p>
+<p>使用 DTOs，我们可以在不影响领域设计的情况下，<strong>在领域模型中建立不同的视图</strong>，比如根据客户需求创建同一领域的不同表现形式，为解决复杂问题提供了灵活性。</p>
+<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>我们将使用一个简单程序来演示这种模式，其中包含两个主要领域模型–用户和角色，两个功能例子–用户查询和创建用户。</p>
+<h3 id="DTO-vs-Domain"><a href="#DTO-vs-Domain" class="headerlink" title="DTO vs Domain"></a>DTO vs Domain</h3><p>领域模型定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Role&gt; roles;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String name, String password, List&lt;Role&gt; roles)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = Objects.requireNonNull(name);</span><br><span class="line">        <span class="keyword">this</span>.password = <span class="keyword">this</span>.encrypt(password);</span><br><span class="line">        <span class="keyword">this</span>.roles = Objects.requireNonNull(roles);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Getters and Setters</span></span><br><span class="line"></span><br><span class="line">   <span class="function">String <span class="title">encrypt</span><span class="params">(String password)</span> </span>&#123;</span><br><span class="line">       <span class="comment">// encryption logic</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Role</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Constructors, getters and setters</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在让我们看看 DTOs，以便与领域模型进行比较。</p>
+<p><strong>此刻，重点关注 DTO 呈现的是客户端请求或接收的数据模型。</strong></p>
+<p>因此，这些微小的差异是可能为了将请求合并后发送到服务器，也可能是为了优化客户端的响应。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class UserDTO &#123;</span><br><span class="line">    private String name;</span><br><span class="line">    private List&lt;String&gt; roles;</span><br><span class="line">    </span><br><span class="line">    // standard getters and setters</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 DTO 只向客户端提供用户有关信息，例如出于安全考虑不返回密码。</p>
+<p>下面的 DTO 则是组合了创建用户所需的数据，并在一个请求中发送给服务器，优化了请求交互：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCreationDTO</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; roles;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// standard getters and setters</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="请求交互"><a href="#请求交互" class="headerlink" title="请求交互"></a>请求交互</h3><p>接下来，使用映射器将数据在两边转换传输，这通常在表现层上使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/users"</span>)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line">    <span class="keyword">private</span> RoleService roleService;</span><br><span class="line">    <span class="keyword">private</span> Mapper mapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Constructor</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;UserDTO&gt; <span class="title">getUsers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userService.getAll()</span><br><span class="line">          .stream()</span><br><span class="line">          .map(mapper::toDto)</span><br><span class="line">          .collect(toList());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserIdDTO <span class="title">create</span><span class="params">(@RequestBody UserCreationDTO userDTO)</span> </span>&#123;</span><br><span class="line">        User user = mapper.toUser(userDTO);</span><br><span class="line"></span><br><span class="line">        userDTO.getRoles()</span><br><span class="line">          .stream()</span><br><span class="line">          .map(role -&gt; roleService.getOrCreate(role))</span><br><span class="line">          .forEach(user::addRole);</span><br><span class="line"></span><br><span class="line">        userService.save(user);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> UserIdDTO(user.getId());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，我们需要<strong>转换数据模型的映射组件，确保 DTO 和领域模型不需要互相了解。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mapper</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDTO <span class="title">toDto</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">        String name = user.getName();</span><br><span class="line">        List&lt;String&gt; roles = user</span><br><span class="line">          .getRoles()</span><br><span class="line">          .stream()</span><br><span class="line">          .map(Role::getName)</span><br><span class="line">          .collect(toList());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> UserDTO(name, roles);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">toUser</span><span class="params">(UserCreationDTO userDTO)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User(userDTO.getName(), userDTO.getPassword(), <span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h2><p>虽然 DTO模式 是一种简单的设计模式，但我们在使用这种模式时通常会犯一些错误。</p>
+<p>第一个错误就是在每一个场合都创建不同的 DTOs，这会导致我们需要维护的类和映射器数量增加，因此尽量保持它们的的简洁，同时评估增加或重用现有的 DTO 的利弊。</p>
+<p>同时我们也要避免在多个场合中使用同一个 DTO，因为这种做法可能会导致 DTO 中许多属性经常都用不上。</p>
+<p>另一个错误就是在 DTO 中添加业务逻辑，因为该模式的目的是为了优化数据结构和数据传输，因此，所有的业务逻辑应该放在领域层中。</p>
+<p>最后，我们还有种叫 <a href="https://martinfowler.com/bliki/LocalDTO.html" target="_blank" rel="noopener">LocalDTOs</a>，<strong>即使用 DTOs 跨层传递数据，但问题还是在于维护映射的成本。</strong></p>
+<p>支持这种 LocalDTOs 用法最常见的论据之一是对领域模型的封装，因为这里的问题是领域模型与持久化模型的耦合，而通过这种方法解耦，几乎可以规避暴露领域模型的风险。</p>
+<p>而其他模式也可以达到类似的结果，但它们通常用于更复杂的场景，如<a href="https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf" target="_blank" rel="noopener">CQRS</a>、<a href="https://martinfowler.com/eaaCatalog/dataMapper.html" target="_blank" rel="noopener">Data Mappers</a>、<a href="https://martinfowler.com/bliki/CommandQuerySeparation.html" target="_blank" rel="noopener">CommandQuerySeparation</a> 等。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本文中，我们看到了 <a href="https://martinfowler.com/eaaCatalog/dataTransferObject.html" target="_blank" rel="noopener">DTO模式</a> 的定义，和它为什么存在以及如何实现它。</p>
+<p>同时，我们还看到了使用 DTO模式 中一些常见错误和避免的方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    蛋筒冰淇淋
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iyichen.xyz/2022/04/the-dto-pattern/" title="DTO设计模式">https://iyichen.xyz/2022/04/the-dto-pattern/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># Java</a>
+          
+            <a href="/tags/spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/designpatterns/" rel="tag"># DesignPatterns</a>
+          
+            <a href="/tags/dto/" rel="tag"># DTO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/01/hexo-leancloud-valine-access-fail/" rel="next" title="Hexo使用国际版LeanCloud Valine评论连接失败">
+                <i class="fa fa-chevron-left"></i> Hexo使用国际版LeanCloud Valine评论连接失败
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="蛋筒冰淇淋">
+            
+              <p class="site-author-name" itemprop="name">蛋筒冰淇淋</p>
+              <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/iyichen" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:iyichen@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tutorials.jenkov.com/" title="Jenkov" target="_blank">Jenkov</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dzone.com/" title="DZone" target="_blank">DZone</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何使用"><span class="nav-number">3.</span> <span class="nav-text">如何使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#何时使用"><span class="nav-number">4.</span> <span class="nav-text">何时使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用示例"><span class="nav-number">5.</span> <span class="nav-text">使用示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DTO-vs-Domain"><span class="nav-number">5.1.</span> <span class="nav-text">DTO vs Domain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求交互"><span class="nav-number">5.2.</span> <span class="nav-text">请求交互</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见错误"><span class="nav-number">6.</span> <span class="nav-text">常见错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yichen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
+
+
+<!--
+<div>
+  <a href="http://www.beian.miit.gov.cn">浙ICP备18016077号</a>
+</div>
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <!-- <script src="/js/src/Valine.min.js"></script> -->
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'sasdJibp23EOXoGvXDxUAiDQ-MdYXbMMI',
+        appKey: '3UQsz1OyMb3Knz5rERw7DixV',
+        placeholder: '说点什么吧~',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+        serverURLs: 'https://sasdjibp.api.lncldglobal.com',
+    });
+
+    //增加以下六行代码去除 power by valine
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <!-- <script type="text/javascript" src="/js/src/custom/clicksocialvalue.js"></script>
+  <script type="text/javascript" src="/js/src/custom/clicklove.js"></script> -->
+</html>

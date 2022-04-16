@@ -82,17 +82,18 @@
 
 
 
+<meta name="description" content="本文记录了如何在 CentOS8 设置 Locale。 起因最近在 CentOS 上做文件下载功能调试时，发现了个异常： 123456java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: /data/trans/视频.mp4        at sun.nio.fs.">
 <meta name="keywords" content="Java,Linux,Memo,File,Locale">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS8设置locale">
 <meta property="og:url" content="https://iyichen.xyz/2021/09/centos-update-locale/index.html">
 <meta property="og:site_name" content="杂货店">
+<meta property="og:description" content="本文记录了如何在 CentOS8 设置 Locale。 起因最近在 CentOS 上做文件下载功能调试时，发现了个异常： 123456java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: /data/trans/视频.mp4        at sun.nio.fs.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/210918-head.png">
-<meta property="og:updated_time" content="2021-09-18T08:54:53.059Z">
+<meta property="og:updated_time" content="2022-04-16T16:08:18.686Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CentOS8设置locale">
-<meta name="twitter:image" content="https://image.iyichen.xyz/blog/210918-head.png">
+<meta name="twitter:description" content="本文记录了如何在 CentOS8 设置 Locale。 起因最近在 CentOS 上做文件下载功能调试时，发现了个异常： 123456java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: /data/trans/视频.mp4        at sun.nio.fs.">
 
 
 
@@ -368,7 +369,7 @@
                   <span class="post-meta-item-text">本文字数&#58;</span>
                 
                 <span title="本文字数">
-                  560
+                  572
                 </span>
               
 
@@ -405,10 +406,10 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/blog/210918-head.png" alt=""></p>
-<a id="more"></a>
+        <p>本文记录了如何在 <code>CentOS8</code> 设置 <code>Locale</code>。</p>
 <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在 <code>CentOS</code> 上做文件下载功能调试时，发现了个异常：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: /data/trans/视频.mp4</span><br><span class="line">        at sun.nio.fs.UnixPath.encode(UnixPath.java:147)</span><br><span class="line">        at sun.nio.fs.UnixPath.&lt;init&gt;(UnixPath.java:71)</span><br><span class="line">        at sun.nio.fs.UnixFileSystem.getPath(UnixFileSystem.java:281)</span><br><span class="line">        at java.nio.file.Paths.get(Paths.java:84)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>按照异常提示信息，应该是文件路径中包含了特殊字符之类的，但仔细看了下路径，只包含了中英文字符，那只能猜测系统不支持中文字符了。</p>
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>新建一个中文名称的文件：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@ecs-centos tmp]# touch 文件.txt</span><br><span class="line">[root@ecs-centos tmp]# ll</span><br><span class="line">total 16</span><br><span class="line">-rw-r--r-- 1 root root    0 Sep 18 16:11 ''$'\346\226\207\344\273\266''.txt'</span><br><span class="line">[root@ecs-centos tmp]#</span><br></pre></td></tr></table></figure>
@@ -574,7 +575,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -596,7 +597,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -712,7 +713,7 @@
 
 
 
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a><a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备18016077号</a></div>
+  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--
