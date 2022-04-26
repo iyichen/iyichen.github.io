@@ -71,7 +71,7 @@
 
 
 
-  <meta name="keywords" content="Translation,Java,Spring,DesignPatterns,DTO,">
+  <meta name="keywords" content="Java,Spring,Translation,DesignPatterns,DTO,">
 
 
 
@@ -83,17 +83,17 @@
 
 
 <meta name="description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
-<meta name="keywords" content="Translation,Java,Spring,DesignPatterns,DTO">
+<meta name="keywords" content="Java,Spring,Translation,DesignPatterns,DTO">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[译] DTO设计模式">
+<meta property="og:title" content="[译] DTO模式">
 <meta property="og:url" content="https://iyichen.xyz/2022/04/the-dto-pattern/index.html">
 <meta property="og:site_name" content="杂货店">
 <meta property="og:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220416-dto.svg">
-<meta property="og:updated_time" content="2022-04-17T04:13:08.191Z">
+<meta property="og:updated_time" content="2022-04-26T04:30:22.252Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[译] DTO设计模式">
+<meta name="twitter:title" content="[译] DTO模式">
 <meta name="twitter:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
 <meta name="twitter:image" content="https://image.iyichen.xyz/blog/2022/220416-dto.svg">
 
@@ -131,7 +131,7 @@
 
 
 
-  <title>[译] DTO设计模式 | 杂货店</title>
+  <title>[译] DTO模式 | 杂货店</title>
   
 
 
@@ -291,7 +291,7 @@
     <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/04/the-dto-pattern/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="蛋筒冰淇淋">
+      <meta itemprop="name" content="尘伊">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/zm.jpg">
     </span>
@@ -305,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[译] DTO设计模式</h1>
+          <h1 class="post-title" itemprop="name headline">[译] DTO模式</h1>
         
 
         <div class="post-meta">
@@ -463,11 +463,11 @@
         <ul class="post-copyright">
   <li class="post-copyright-author">
     <strong>本文作者：</strong>
-    蛋筒冰淇淋
+    尘伊
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://iyichen.xyz/2022/04/the-dto-pattern/" title="[译] DTO设计模式">https://iyichen.xyz/2022/04/the-dto-pattern/</a>
+    <a href="https://iyichen.xyz/2022/04/the-dto-pattern/" title="[译] DTO模式">https://iyichen.xyz/2022/04/the-dto-pattern/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -482,11 +482,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/translation/" rel="tag"># Translation</a>
-          
             <a href="/tags/java/" rel="tag"># Java</a>
           
             <a href="/tags/spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/translation/" rel="tag"># Translation</a>
           
             <a href="/tags/designpatterns/" rel="tag"># DesignPatterns</a>
           
@@ -512,6 +512,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/04/desensitization-data-design/" rel="prev" title="聊聊用户敏感数据保存">
+                聊聊用户敏感数据保存 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -580,9 +584,9 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="蛋筒冰淇淋">
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="尘伊">
             
-              <p class="site-author-name" itemprop="name">蛋筒冰淇淋</p>
+              <p class="site-author-name" itemprop="name">尘伊</p>
               <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
           </div>
 
@@ -593,7 +597,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -615,7 +619,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

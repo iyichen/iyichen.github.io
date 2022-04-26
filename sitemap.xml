@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://iyichen.xyz/2022/04/desensitization-data-design/</loc>
+    
+    <lastmod>2022-04-26T10:32:16.365Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
+    
+    <lastmod>2022-04-26T04:36:44.830Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://iyichen.xyz/2022/04/the-dto-pattern/</loc>
     
-    <lastmod>2022-04-17T04:13:08.191Z</lastmod>
+    <lastmod>2022-04-26T04:30:22.252Z</lastmod>
     
   </url>
   
@@ -254,14 +268,14 @@
   </url>
   
   <url>
-    <loc>https://iyichen.xyz/bookmark/index.html</loc>
+    <loc>https://iyichen.xyz/about/index.html</loc>
     
     <lastmod>2020-10-29T13:09:09.661Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://iyichen.xyz/about/index.html</loc>
+    <loc>https://iyichen.xyz/bookmark/index.html</loc>
     
     <lastmod>2020-10-29T13:09:09.661Z</lastmod>
     
@@ -285,13 +299,6 @@
     <loc>https://iyichen.xyz/2019/06/specification-pattern-in-java/</loc>
     
     <lastmod>2020-10-29T13:09:09.659Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
-    
-    <lastmod>2020-10-29T13:09:09.658Z</lastmod>
     
   </url>
   

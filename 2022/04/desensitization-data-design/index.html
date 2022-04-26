@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+
+
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Design,Java,Spring,MySQL,Algorithm,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文聊聊服务端系统设计中，关于用户敏感数据相关的设计。 密码安全对于大部分的网络服务来说，都是注册登录之后才能使用。在注册成功后，服务端需要保存用户的账号和密码，这样后续才能验证用户登录是否合法。">
+<meta name="keywords" content="Design,Java,Spring,MySQL,Algorithm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊用户敏感数据保存">
+<meta property="og:url" content="https://iyichen.xyz/2022/04/desensitization-data-design/index.html">
+<meta property="og:site_name" content="杂货店">
+<meta property="og:description" content="本文聊聊服务端系统设计中，关于用户敏感数据相关的设计。 密码安全对于大部分的网络服务来说，都是注册登录之后才能使用。在注册成功后，服务端需要保存用户的账号和密码，这样后续才能验证用户登录是否合法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220425-1.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220425-2.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220425-ecb.png">
+<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/220425-cbc.png">
+<meta property="og:updated_time" content="2022-04-26T10:32:16.365Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="聊聊用户敏感数据保存">
+<meta name="twitter:description" content="本文聊聊服务端系统设计中，关于用户敏感数据相关的设计。 密码安全对于大部分的网络服务来说，都是注册登录之后才能使用。在注册成功后，服务端需要保存用户的账号和密码，这样后续才能验证用户登录是否合法。">
+<meta name="twitter:image" content="https://image.iyichen.xyz/blog/2022/220425-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://iyichen.xyz/2022/04/desensitization-data-design/">
+
+
+
+
+
+  <title>聊聊用户敏感数据保存 | 杂货店</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?00f982f755818931cf2f1dc7bc1d7aa3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杂货店</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">得之坦然，失之淡然</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-追番">
+          <a href="/bangumis/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br>
+            
+            追番
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/04/desensitization-data-design/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="尘伊">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杂货店">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">聊聊用户敏感数据保存</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-26T00:00:00+08:00">
+                2022-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/thinking/" itemprop="url" rel="index">
+                    <span itemprop="name">Thinking</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  3.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  14 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文聊聊服务端系统设计中，关于用户敏感数据相关的设计。</p>
+<h2 id="密码安全"><a href="#密码安全" class="headerlink" title="密码安全"></a>密码安全</h2><p>对于大部分的网络服务来说，都是注册登录之后才能使用。在注册成功后，服务端需要保存用户的账号和密码，这样后续才能验证用户登录是否合法。</p>
+<a id="more"></a>
+<h3 id="MD5处理"><a href="#MD5处理" class="headerlink" title="MD5处理"></a>MD5处理</h3><p>最常见的加密方式，一般就是将用户密码进行一次 MD5 处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DigestUtils.md5Hex(<span class="string">"123456"</span>) <span class="comment">// e10adc3949ba59abbe56e057f20f883e</span></span><br></pre></td></tr></table></figure>
+<p>这时，存入数据库中的就不是明文密码了，而是 MD5 处理后的密码摘要。</p>
+<p>MD5 摘要算法决定了无法根据摘要信息推算出原始数据，但仍然不安全。从攻击者角度来说，虽然 MD5 无法逆向计算，但是<strong>理论上</strong>可以根据正向计算，组合所有字符构建出一张大表（一般将这张表称为彩虹表），拿到密码摘要后，从彩虹表中反查，即可获取到用户的原始密码。</p>
+<p>在 <a href="https://cmd5.com/" target="_blank" rel="noopener">CMD5</a> 查询，以上面的密码为例，不用多久就能查到原始密码：</p>
+<p><img src="https://image.iyichen.xyz/blog/2022/220425-1.png" alt=""></p>
+<h3 id="加盐处理"><a href="#加盐处理" class="headerlink" title="加盐处理"></a>加盐处理</h3><p>在进行 MD5 前对密码加盐是一种常见的操作，但是需要注意，盐不要固定，并且需要有一定长度。</p>
+<p>假设盐是固定的简单字符串：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 假设密码为123456，盐为abc</span></span><br><span class="line">DigestUtils.md5Hex(<span class="string">"123456"</span> + <span class="string">"abc"</span>) <span class="comment">// df10ef8509dc176d733d59549e7dbfaf</span></span><br></pre></td></tr></table></figure>
+<p>通过查询可以 <code>df10ef8509dc176d733d59549e7dbfaf</code> 找到对应的原始字符串为 <code>123456abc</code>。</p>
+<p>那如何判断是否有加盐呢？通过注册一个新账号，使用简单密码进行注册，比如 <code>1</code>，服务端 MD5 处理后得到的最终密码摘要为 <code>e511341dc05782269d3d859b5ff3939b</code>，反查之后，就可以得出盐为 <code>abc</code> ：</p>
+<p><img src="https://image.iyichen.xyz/blog/2022/220425-2.png" alt=""></p>
+<p>因为使用了简单的并且是固定的盐，意味着如果用户的原始密码就简单，那拼接后的字符串也简单，那么一般从彩虹表中都能找到，进而可以推断出原始密码。</p>
+<p>同时使用相同的盐，意味着相同密码的用户的 MD5 是一样的，那么只要知道一个，就可以获取多个用户的密码。</p>
+<p>因此推荐每个用户的盐不一样，并且要长一点，例如使用 <code>UUID</code>。因为对于攻击者来说，即使拿到了所有用户的密码和盐，也加大了分析出每个用户的原始密码的成本。</p>
+<h3 id="使用BCrypt算法"><a href="#使用BCrypt算法" class="headerlink" title="使用BCrypt算法"></a>使用BCrypt算法</h3><p>也推荐使用其他算法，如 <code>BCrypt</code> 就是为了加密而设计的算法：</p>
+<p>使用示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mindrot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jbcrypt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String password = <span class="string">"123456"</span>;</span><br><span class="line">String hashed = BCrypt.hashpw(password, BCrypt.gensalt());  </span><br><span class="line">System.out.println(hashed); <span class="comment">// $2a$10$AyXgU8Slib3qWn4BPFoCc.LPzOtSBflv11poa8XzIW/595/RK/eHe</span></span><br><span class="line"><span class="keyword">assert</span> BCrypt.checkpw(password, hashed);</span><br></pre></td></tr></table></figure>
+<h2 id="身份敏感信息"><a href="#身份敏感信息" class="headerlink" title="身份敏感信息"></a>身份敏感信息</h2><p>身份敏感信息是指像用户姓名，身份证号等信息，像这种信息，我们不能使用密码加密那种单向算法，因为无法解密。这时候应该选择可逆算法，包括对称加密和非对称加密算法。</p>
+<p>对称加密算法，是指双方使用相同的密钥进行加密和解密，特点是加密速度快，但是密钥在传输过程中可能会被窃取，如 AES，DES 就属于此类。</p>
+<p>非对称加密算法，是指使用密钥对进行加密和解密，具体来说，就是使用公钥加密，使用私钥解密，公钥可以公开（可以发送给请求方，请求方使用公钥加密信息），私钥不能公开（接收方使用私钥解密信息）。特点是加密速度比较慢，但是可以避免密钥传输过程的安全问题，如 RSA 就属于此类。</p>
+<p>因为我们是属于服务内部使用，不存在分发密钥的情况，所以更偏向于使用对称加密，此处使用AES算法对敏感信息做加密，而AES算法又有几种加密模式：ECB、CBC、CTR、OCF、CFB、XTS。</p>
+<h3 id="使用ECB模式"><a href="#使用ECB模式" class="headerlink" title="使用ECB模式"></a>使用ECB模式</h3><p>ECB模式是最简单的块密码加密模式，加密前根据加密块大小分成若干块，之后将每块使用相同的密钥单独加密，解密同理。因为使用相同的数据块密钥加密后的密文相同，所以会有安全问题。</p>
+<p><img src="https://image.iyichen.xyz/blog/2022/220425-ecb.png" alt=""></p>
+<p>如果我们将密文重复几次，可以发现仍然可以解密成功，结果明文被复制了多次：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">String key = <span class="string">"77fe5145ef3749a4"</span>;</span><br><span class="line">Cipher cipher = Cipher.getInstance(<span class="string">"AES/ECB/NoPadding"</span>);</span><br><span class="line">cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), <span class="string">"AES"</span>));</span><br><span class="line">String ciphertext = Hex.encodeHexString(cipher.doFinal(<span class="string">"0123456789abcdef"</span>.getBytes()));</span><br><span class="line">System.out.println(ciphertext); <span class="comment">// 10652dfd1b30e239b1b3474585ee0f71</span></span><br><span class="line"></span><br><span class="line">cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), <span class="string">"AES"</span>));</span><br><span class="line">String origin = <span class="keyword">new</span> String(cipher.doFinal(Hex.decodeHex(ciphertext)));</span><br><span class="line">System.out.println(origin); <span class="comment">// 0123456789abcdef</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并两段密文</span></span><br><span class="line">String origin2 = <span class="keyword">new</span> String(cipher.doFinal(Hex.decodeHex(ciphertext + ciphertext)));</span><br><span class="line">System.out.println(origin2); <span class="comment">// 0123456789abcdef0123456789abcdef</span></span><br></pre></td></tr></table></figure>
+<p>因此如果有个密文是由多个子密文拼接而成的 <code>AES(A) + AES(B) + AES(C)</code>，即使我们不知道密钥，也可以通过调换子密文位置，使业务逻辑出错。</p>
+<h3 id="使用CBC模式"><a href="#使用CBC模式" class="headerlink" title="使用CBC模式"></a>使用CBC模式</h3><p>CBC模式先将明文切分组，每一组与上一组的密文块进行异或运算后，再使用密钥进行加密。第一个块需要使用初始化向量（IV），之后的分组使用前一个分组的数据，这样即使明文一样，加密后的数据也是不同。因为需要保证分组访问的顺序性，相较ECB提高了安全性，但是加密过程无法并行化，而且消息必须填充到分组大小的整数倍。</p>
+<p><img src="https://image.iyichen.xyz/blog/2022/220425-cbc.png" alt=""></p>
+<p>如果再将密文复制多次，发现无法解析出明文：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">String key = <span class="string">"77fe5145ef3749a4"</span>;</span><br><span class="line"><span class="comment">// 初始化向量</span></span><br><span class="line">IvParameterSpec iv = <span class="keyword">new</span> IvParameterSpec(<span class="string">"fedcba9876543210"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">Cipher cipher = Cipher.getInstance(<span class="string">"AES/CBC/NoPadding"</span>);</span><br><span class="line">cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), <span class="string">"AES"</span>), iv);</span><br><span class="line">String ciphertext = Hex.encodeHexString(cipher.doFinal(<span class="string">"0123456789abcdef"</span>.getBytes()));</span><br><span class="line">System.out.println(ciphertext); <span class="comment">// 1e21a01bfb1c6512439958cf03356c75</span></span><br><span class="line"></span><br><span class="line">cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), <span class="string">"AES"</span>), iv);</span><br><span class="line">String origin = <span class="keyword">new</span> String(cipher.doFinal(Hex.decodeHex(ciphertext)));</span><br><span class="line">System.out.println(origin); <span class="comment">// 0123456789abcdef</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并两段密文</span></span><br><span class="line">String origin2 = <span class="keyword">new</span> String(cipher.doFinal(Hex.decodeHex(ciphertext + ciphertext)));</span><br><span class="line">System.out.println(origin2); <span class="comment">// 0123456789abcdefHu�K�HjL��Sc8#</span></span><br></pre></td></tr></table></figure>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>对于敏感数据保存，可以使用 AES+CBC 加密保存。在数据库设计上，不要直接存储用户的明文信息，而存储密文信息以及数据脱敏信息，这样做普通查询的时候，直接使用脱敏信息即可。密钥和初始化向量最好是独立唯一并且变化的，并且使用独立的加密服务来保存密钥和加密操作。</p>
+<p>以用户姓名和身份证为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table</span>(name = <span class="string">"user_data"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserData</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"id"</span>)</span><br><span class="line">    <span class="meta">@GeneratedValue</span>(generator = <span class="string">"userDataID"</span>, strategy = GenerationType.AUTO)</span><br><span class="line">    <span class="meta">@GenericGenerator</span>(name = <span class="string">"userDataID"</span>, strategy = <span class="string">"assigned"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户姓名</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"name"</span>, nullable = <span class="keyword">false</span>, length = <span class="number">20</span>)</span><br><span class="line">    <span class="keyword">private</span> String name = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户姓名密文ID</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"name_cipher_id"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> nameCipherId = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户姓名密文内容</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"name_cipher_text"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String nameCipherText = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户身份证</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"id_card"</span>, nullable = <span class="keyword">false</span>, length = <span class="number">20</span>)</span><br><span class="line">    <span class="keyword">private</span> String idCard = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户身份证密文ID</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"id_card_cipher_id"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> idCardCipherId = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户身份证密文内容</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"id_card_cipher_text"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String idCardCipherText = <span class="string">""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时，还需要记录密钥和初始向量信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table</span>(name = <span class="string">"cipher_data"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CipherData</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"id"</span>)</span><br><span class="line">    <span class="meta">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始向量</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"iv"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String iv;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 密钥</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Column</span>(name = <span class="string">"secret_key"</span>, nullable = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> String secretKey;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>加密服务使用 GCM 模式的 AES-256 对称加密算法，加密时允许传入一个 AAD 用于认证（当解密时使用的 AAD 错误时，依然会解密失败）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CipherService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//密钥长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> AES_KEY_SIZE = <span class="number">256</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//初始化向量长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> GCM_IV_LENGTH = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//GCM身份认证Tag长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> GCM_TAG_LENGTH = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> CipherDataRepository cipherDataRepository;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CipherResult <span class="title">encrypt</span><span class="params">(String data, String aad)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 生成密钥</span></span><br><span class="line">        KeyGenerator keyGenerator = KeyGenerator.getInstance(<span class="string">"AES"</span>);</span><br><span class="line">        keyGenerator.init(AES_KEY_SIZE);</span><br><span class="line">        SecretKey key = keyGenerator.generateKey();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成初始向量</span></span><br><span class="line">        <span class="keyword">byte</span>[] iv = <span class="keyword">new</span> <span class="keyword">byte</span>[GCM_IV_LENGTH];</span><br><span class="line">        SecureRandom random = <span class="keyword">new</span> SecureRandom();</span><br><span class="line">        random.nextBytes(iv);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存密钥&amp;向量</span></span><br><span class="line">        CipherData cipherData = <span class="keyword">new</span> CipherData();</span><br><span class="line">        cipherData.setIv(Base64.getEncoder().encodeToString(iv));</span><br><span class="line">        cipherData.setSecretKey(Base64.getEncoder().encodeToString(key.getEncoded()));</span><br><span class="line">        cipherDataRepository.save(cipherData);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//加密</span></span><br><span class="line">        <span class="keyword">byte</span>[] aadBytes = StringUtils.isBlank(aad) ? <span class="keyword">null</span> : aad.getBytes();</span><br><span class="line">        CipherResult cipherResult = <span class="keyword">new</span> CipherResult();</span><br><span class="line">        cipherResult.setCipherText(Base64.getEncoder().encodeToString(encrypt(data.getBytes(), key, iv, aadBytes)));</span><br><span class="line">        cipherResult.setCipherId(cipherData.getId());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> cipherResult;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">decrypt</span><span class="params">(<span class="keyword">int</span> cipherId, String cipherText, String aad)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        CipherData cipherData = cipherDataRepository.findById(cipherId)</span><br><span class="line">                .orElseThrow(() -&gt; <span class="keyword">new</span> IllegalArgumentException(<span class="string">"invalid cipherId"</span>));</span><br><span class="line">        <span class="comment">// 获取密钥</span></span><br><span class="line">        <span class="keyword">byte</span>[] decodedKey = Base64.getDecoder().decode(cipherData.getSecretKey());</span><br><span class="line">        SecretKey originalKey = <span class="keyword">new</span> SecretKeySpec(decodedKey, <span class="number">0</span>, decodedKey.length, <span class="string">"AES"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取初始向量</span></span><br><span class="line">        <span class="keyword">byte</span>[] decodedIv = Base64.getDecoder().decode(cipherData.getIv());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] aadBytes = StringUtils.isBlank(aad) ? <span class="keyword">null</span> : aad.getBytes();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String(decrypt(Base64.getDecoder().decode(cipherText.getBytes()), originalKey, decodedIv, aadBytes));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] encrypt(<span class="keyword">byte</span>[] plaintext, SecretKey key, <span class="keyword">byte</span>[] iv, <span class="keyword">byte</span>[] aad) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Cipher cipher = Cipher.getInstance(<span class="string">"AES/GCM/NoPadding"</span>);</span><br><span class="line">        cipher.init(Cipher.ENCRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getEncoded(), <span class="string">"AES"</span>), <span class="keyword">new</span> GCMParameterSpec(GCM_TAG_LENGTH * <span class="number">8</span>, iv));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (aad != <span class="keyword">null</span>) &#123;</span><br><span class="line">            cipher.updateAAD(aad);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cipher.doFinal(plaintext);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] decrypt(<span class="keyword">byte</span>[] cipherText, SecretKey key, <span class="keyword">byte</span>[] iv, <span class="keyword">byte</span>[] aad) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Cipher cipher = Cipher.getInstance(<span class="string">"AES/GCM/NoPadding"</span>);</span><br><span class="line">        cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(key.getEncoded(), <span class="string">"AES"</span>), <span class="keyword">new</span> GCMParameterSpec(GCM_TAG_LENGTH * <span class="number">8</span>, iv));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (aad != <span class="keyword">null</span>) &#123;</span><br><span class="line">            cipher.updateAAD(aad);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cipher.doFinal(cipherText);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上层接口调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"save"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> UserData <span class="title">right</span><span class="params">(@RequestParam(value = <span class="string">"name"</span>, defaultValue = <span class="string">"吴彦祖"</span>)</span> String name,</span></span><br><span class="line"><span class="function">                      @<span class="title">RequestParam</span><span class="params">(value = <span class="string">"idCard"</span>, defaultValue = <span class="string">"430722199101131921"</span>)</span> String idCard,</span></span><br><span class="line"><span class="function">                      @<span class="title">RequestParam</span><span class="params">(value = <span class="string">"aad"</span>, defaultValue = <span class="string">"ed45s"</span>)</span> String aad) <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    UserData userData = <span class="keyword">new</span> UserData();</span><br><span class="line">    userData.setId(userId);</span><br><span class="line">    <span class="comment">// 保存脱敏数据</span></span><br><span class="line">    userData.setName(DesensitizationUtils.desensitize(name, DesensitizationUtils.DesensitizationType.NAME));</span><br><span class="line">    userData.setIdCard(DesensitizationUtils.desensitize(idCard, DesensitizationUtils.DesensitizationType.ID_CARD));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加密姓名</span></span><br><span class="line">    CipherResult cipherResultName = cipherService.encrypt(name, aad);</span><br><span class="line">    userData.setNameCipherId(cipherResultName.getCipherId());</span><br><span class="line">    userData.setNameCipherText(cipherResultName.getCipherText());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加密身份证</span></span><br><span class="line">    CipherResult cipherResultIdCard = cipherService.encrypt(idCard, aad);</span><br><span class="line">    userData.setIdCardCipherId(cipherResultIdCard.getCipherId());</span><br><span class="line">    userData.setIdCardCipherText(cipherResultIdCard.getCipherText());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> userDataRepository.save(userData);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"get-real-data"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">get</span><span class="params">(@RequestParam(value = <span class="string">"aad"</span>, defaultValue = <span class="string">"ed45s"</span>)</span> String aad) <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Map&lt;String, String&gt; result = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    UserData userData = userDataRepository.findById(userId)</span><br><span class="line">      .orElseThrow(() -&gt; <span class="keyword">new</span> IllegalArgumentException(<span class="string">"userId["</span> + userId + <span class="string">"] not exist"</span>));</span><br><span class="line">    <span class="comment">// 解密姓名</span></span><br><span class="line">    String name = cipherService.decrypt(userData.getNameCipherId(), userData.getNameCipherText(), aad);</span><br><span class="line">    <span class="comment">// 解密身份证</span></span><br><span class="line">    String idCard = cipherService.decrypt(userData.getIdCardCipherId(), userData.getIdCardCipherText(), aad);</span><br><span class="line">    result.put(<span class="string">"name"</span>, name);</span><br><span class="line">    result.put(<span class="string">"idCard"</span>, idCard);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用加密接口后可以看到用户信息已经脱敏：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    id: 10,</span><br><span class="line">    name: "吴*祖",</span><br><span class="line">    nameCipherId: 19,</span><br><span class="line">    nameCipherText: "KV5zTlh7szqDCdfl6fpgfQ2uXE6sxNbl1g==",</span><br><span class="line">    idCard: "430722********1921",</span><br><span class="line">    idCardCipherId: 20,</span><br><span class="line">    idCardCipherText: "J+137ENEtuGX3phLH7mYFigcm0g/nbaOeRM584VzuVcvGA=="</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而调用解密接口可以看到原始信息：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    idCard: "430722199101131921",</span><br><span class="line">    name: "吴彦祖"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果 AAD 信息不对，将返回 <code>Tag mismatch!</code></p>
+<h2 id="日志过滤"><a href="#日志过滤" class="headerlink" title="日志过滤"></a>日志过滤</h2><p>除开数据库外，另一个可能会存储敏感数据的地方就是日志。</p>
+<p>一般来说，日志打印数据有两种情况：</p>
+<ul>
+<li><p>敏感信息在参数中，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String password = <span class="string">"123456"</span>;</span><br><span class="line">log.info(<span class="string">"user password: &#123;&#125;"</span>, password);</span><br></pre></td></tr></table></figure>
+<p>这种情况方便处理，在写入日志之前先处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String password = <span class="string">"123456"</span>;</span><br><span class="line">log.info(<span class="string">"user password: `&#123;&#125;`."</span>, DesensitizationUtils.desensitize(password);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>敏感信息在对象中，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User user1 = <span class="keyword">new</span> User();</span><br><span class="line">user1.setPassword(<span class="string">"123456"</span>);</span><br><span class="line">log.info(<span class="string">"user: `&#123;&#125;`."</span>, user1);</span><br></pre></td></tr></table></figure>
+<p>这种情况下，因为最终是以字符串的形式写入文件的，因此可以在写入文件之前对字符串进行处理。</p>
+</li>
+</ul>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><p>以 <code>Logback</code> 为例，可以通过自定义 <code>PatternLayout</code> 来实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DesensitizationDataPatternLayout</span> <span class="keyword">extends</span> <span class="title">PatternLayout</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;Pattern&gt; patterns = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DesensitizationDataPatternLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        initPattern();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initPattern</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        patterns.add(Pattern.compile(<span class="string">"password=(.+?)[,&#125;)]"</span>)); <span class="comment">// 密码正则</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">doLayout</span><span class="params">(ILoggingEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取待写入文件的内容</span></span><br><span class="line">        StringBuilder message = <span class="keyword">new</span> StringBuilder(<span class="keyword">super</span>.doLayout(event));</span><br><span class="line">        <span class="keyword">for</span> (Pattern pattern : patterns) &#123;</span><br><span class="line">            <span class="comment">// 正则进行脱敏处理</span></span><br><span class="line">            Matcher matcher = pattern.matcher(message);</span><br><span class="line">            <span class="keyword">while</span> (matcher.find()) &#123;</span><br><span class="line">                String target = matcher.group(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">if</span> (StringUtils.isNotBlank(target)) &#123;</span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> i = matcher.start(<span class="number">1</span>), j = matcher.end(<span class="number">1</span>); i &lt; j; i++) &#123;</span><br><span class="line">                        message.setCharAt(i, <span class="string">'*'</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> message.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后修改配置文件 <code>logback.xml</code>，修改其中 <code>&lt;encoder&gt;</code> 标签部分:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"loggerPattern"</span> <span class="attr">value</span>=<span class="string">"%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; %-5p [%F:%L] : %m%n"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"stdout"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.classic.filter.ThresholdFilter"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">level</span>&gt;</span>INFO<span class="tag">&lt;/<span class="name">level</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line">      	</span><br><span class="line">      	<span class="comment">&lt;!-- 使用 LayoutWrappingEncoder --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.encoder.LayoutWrappingEncoder"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 使用自定义的 PatternLayout --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">layout</span> <span class="attr">class</span>=<span class="string">"org.example.desensitization.log.DesensitizationDataPatternLayout"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;loggerPattern&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"info"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"stdout"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>测试接口调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/log"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">log</span><span class="params">(HttpServletRequest httpServletRequest, User user)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"print param: "</span> + getRequestParams(httpServletRequest));</span><br><span class="line">    log.info(<span class="string">"param: &#123;&#125;."</span>, getRequestParams(httpServletRequest));</span><br><span class="line">    System.out.println(<span class="string">"print user: "</span> + user);</span><br><span class="line">    log.info(<span class="string">"user: &#123;&#125;."</span>, user);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"ok"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, String&gt; <span class="title">getRequestParams</span><span class="params">(HttpServletRequest httpServletRequest)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, String[]&gt; paramMap = httpServletRequest.getParameterMap();</span><br><span class="line">    Map&lt;String, String&gt; result = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (Map.Entry&lt;String, String[]&gt; entry : paramMap.entrySet()) &#123;</span><br><span class="line">      result.put(entry.getKey(), entry.getValue()[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到控制台输出内容，的确密码已经做了脱敏处理：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print param: &#123;password=123, username=admin&#125;</span><br><span class="line">2022-04-26 17:33:40.474 INFO  [LogTestController.java:19] : param: &#123;password=***, username=admin&#125;.</span><br><span class="line">print foo: LogTestController.Foo(username=admin, password=123)</span><br><span class="line">2022-04-26 17:33:40.480 INFO  [LogTestController.java:21] : foo: LogTestController.Foo(username=admin, password=***).</span><br></pre></td></tr></table></figure>
+<h2 id="代码地址"><a href="#代码地址" class="headerlink" title="代码地址"></a>代码地址</h2><p>本文示例代码地址：<a href="https://github.com/iyichen/data-desensitization-demo" target="_blank" rel="noopener">data-desensitization-demo</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    尘伊
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iyichen.xyz/2022/04/desensitization-data-design/" title="聊聊用户敏感数据保存">https://iyichen.xyz/2022/04/desensitization-data-design/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/design/" rel="tag"># Design</a>
+          
+            <a href="/tags/java/" rel="tag"># Java</a>
+          
+            <a href="/tags/spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/mysql/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/algorithm/" rel="tag"># Algorithm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/04/the-dto-pattern/" rel="next" title="[译] DTO模式">
+                <i class="fa fa-chevron-left"></i> [译] DTO模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="尘伊">
+            
+              <p class="site-author-name" itemprop="name">尘伊</p>
+              <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/iyichen" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:iyichen@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tutorials.jenkov.com/" title="Jenkov" target="_blank">Jenkov</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dzone.com/" title="DZone" target="_blank">DZone</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#密码安全"><span class="nav-number">1.</span> <span class="nav-text">密码安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MD5处理"><span class="nav-number">1.1.</span> <span class="nav-text">MD5处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加盐处理"><span class="nav-number">1.2.</span> <span class="nav-text">加盐处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用BCrypt算法"><span class="nav-number">1.3.</span> <span class="nav-text">使用BCrypt算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#身份敏感信息"><span class="nav-number">2.</span> <span class="nav-text">身份敏感信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ECB模式"><span class="nav-number">2.1.</span> <span class="nav-text">使用ECB模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用CBC模式"><span class="nav-number">2.2.</span> <span class="nav-text">使用CBC模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">2.3.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志过滤"><span class="nav-number">3.</span> <span class="nav-text">日志过滤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#示例-1"><span class="nav-number">3.1.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码地址"><span class="nav-number">4.</span> <span class="nav-text">代码地址</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yichen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
+
+
+<!--
+<div>
+  <a href="http://www.beian.miit.gov.cn">浙ICP备18016077号</a>
+</div>
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <!-- <script src="/js/src/Valine.min.js"></script> -->
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'sasdJibp23EOXoGvXDxUAiDQ-MdYXbMMI',
+        appKey: '3UQsz1OyMb3Knz5rERw7DixV',
+        placeholder: '说点什么吧~',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+        serverURLs: 'https://sasdjibp.api.lncldglobal.com',
+    });
+
+    //增加以下六行代码去除 power by valine
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <!-- <script type="text/javascript" src="/js/src/custom/clicksocialvalue.js"></script>
+  <script type="text/javascript" src="/js/src/custom/clicklove.js"></script> -->
+</html>
