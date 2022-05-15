@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://iyichen.xyz/2022/04/desensitization-data-design/</loc>
-    <lastmod>2022-04-26</lastmod>
+    <loc>https://iyichen.xyz/2022/05/misc-note1/</loc>
+    <lastmod>2022-05-15</lastmod>
   </url>  <url>
-    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
-    <lastmod>2022-04-26</lastmod>
+    <loc>https://iyichen.xyz/2022/04/desensitization-data-design/</loc>
+    <lastmod>2022-05-15</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2022/04/the-dto-pattern/</loc>
+    <lastmod>2022-05-15</lastmod>
+  </url>  <url>
+    <loc>https://iyichen.xyz/2020/03/go-project-structure-best-practices/</loc>
+    <lastmod>2022-05-15</lastmod>
+  </url>  <url>
+    <loc>https://iyichen.xyz/2019/02/mac-install-mysql/</loc>
     <lastmod>2022-04-26</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2021/09/centos-update-locale/</loc>
@@ -98,9 +104,6 @@
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2020/02/go-in-action-note/</loc>
-    <lastmod>2021-09-02</lastmod>
-  </url>  <url>
-    <loc>https://iyichen.xyz/2020/03/go-project-structure-best-practices/</loc>
     <lastmod>2021-09-02</lastmod>
   </url>  <url>
     <loc>https://iyichen.xyz/2021/01/hashmap-detail-note/</loc>
