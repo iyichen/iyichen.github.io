@@ -90,12 +90,12 @@
 <meta property="og:site_name" content="自留地">
 <meta property="og:description" content="EnvironmentEnvironment表示应用当前所运行的环境。  Interface representing the environment in which the current application is running. Models two key aspects of the applicationenvironment: profiles and properties.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/190519-StandardEnvironment.png">
-<meta property="og:updated_time" content="2021-09-02T11:21:56.439Z">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/190519-StandardEnvironment.png">
+<meta property="og:updated_time" content="2022-06-17T05:49:44.820Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring中的Environment">
 <meta name="twitter:description" content="EnvironmentEnvironment表示应用当前所运行的环境。  Interface representing the environment in which the current application is running. Models two key aspects of the applicationenvironment: profiles and properties.">
-<meta name="twitter:image" content="https://image.iyichen.xyz/blog/190519-StandardEnvironment.png">
+<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/190519-StandardEnvironment.png">
 
 
 
@@ -418,7 +418,7 @@
 <p>从<code>Environment</code>注释上可以看到，<code>Environment</code>主要负责处理两个方面：<code>profiles</code>和<code>properties</code></p>
 <p><code>profiles</code>类似Maven中的<code>profiles</code>，Spring允许配置多个<code>profile</code>，但只加载激活的<code>profile</code>，通过<code>profiles</code>配置，可以实现不同环境使用不同的配置(例如不同环境使用不同的数据库配置)</p>
 <p><code>properties</code>在整个应用中都会用到，Spring会从各种来源加载：properties文件(例如数据库配置文件)，JVM系统配置，系统环境变量，Servlet上下文参数等。通过<code>properties</code>，可以更加便捷的获取到配置信息</p>
-<h2 id="StandardEnvironment"><a href="#StandardEnvironment" class="headerlink" title="StandardEnvironment"></a>StandardEnvironment</h2><p><img src="https://image.iyichen.xyz/blog/190519-StandardEnvironment.png" alt="StandardEnvironment"></p>
+<h2 id="StandardEnvironment"><a href="#StandardEnvironment" class="headerlink" title="StandardEnvironment"></a>StandardEnvironment</h2><p><img src="https://image.iyichen.xyz/file/ii-image/blog/190519-StandardEnvironment.png" alt="StandardEnvironment"></p>
 <h3 id="Environment-1"><a href="#Environment-1" class="headerlink" title="Environment"></a>Environment</h3><p><code>Environment</code>定义了<code>Profiles</code>相关的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Environment</span> <span class="keyword">extends</span> <span class="title">PropertyResolver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取所有可用的`profile`，如果没有可用的，使用默认的`default`(因此可以在xml中配置默认的`profile`，名称为`default`)</span></span><br><span class="line">    String[] getActiveProfiles();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取默认的`profile`，如果没有指定，返回默认的`default`</span></span><br><span class="line">    String[] getDefaultProfiles();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断`profile`是否可用，可以使用'!'前缀作为取反标记</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">acceptsProfiles</span><span class="params">(String... profiles)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="ConfigurableEnvironment"><a href="#ConfigurableEnvironment" class="headerlink" title="ConfigurableEnvironment"></a>ConfigurableEnvironment</h3><p>如果说<code>Environment</code>定义了<code>Profiles</code>查询方法，那么<code>ConfigurableEnvironment</code>就定义了设置方法：</p>
@@ -715,8 +715,6 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
-
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--

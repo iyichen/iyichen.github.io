@@ -90,12 +90,12 @@
 <meta property="og:site_name" content="自留地">
 <meta property="og:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/2022/04/220416-dto.svg">
-<meta property="og:updated_time" content="2022-05-15T09:36:57.003Z">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/2022/04/220416-dto.svg">
+<meta property="og:updated_time" content="2022-06-17T05:49:44.920Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译] DTO模式">
 <meta name="twitter:description" content="本文翻译自 The DTO Pattern (Data Transfer Object)  概述在本文中，我们将讨论 DTO模式，包括它是什么，何时去使用它，以及如何正确的使用它。 介绍DTO模式首次被提出来是在 Martin Fowler 的 EAA 一书中，DTOs 或 Data Transfer Objects 是一种在进程中传递数据的对象，用来减少方法的调用。">
-<meta name="twitter:image" content="https://image.iyichen.xyz/blog/2022/04/220416-dto.svg">
+<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/2022/04/220416-dto.svg">
 
 
 
@@ -419,7 +419,7 @@
 <h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p>DTOs 通常是作为 POJO 创建的。两者都是<strong>扁平的数据结构，不包含业务逻辑，</strong>只包含存储、访问器和序列化或解析有关的方法。</p>
 <p>DTOs 数据通常是通过表现层或门面层的映射组件，从 <a href="https://martinfowler.com/eaaCatalog/domainModel.html" target="_blank" rel="noopener">领域模型</a> 映射产生的。</p>
 <p>下图说明了组件之间的联系：</p>
-<p><img src="https://image.iyichen.xyz/blog/2022/04/220416-dto.svg" alt="dto模式"></p>
+<p><img src="https://image.iyichen.xyz/file/ii-image/blog/2022/04/220416-dto.svg" alt="dto模式"></p>
 <h2 id="何时使用"><a href="#何时使用" class="headerlink" title="何时使用"></a>何时使用</h2><p>在远程调用的系统中很有用，因为 DTOs 有助于减少远程调用的次数。</p>
 <p>当领域模型由很多对象组成，并且展示模型需要一次性使用到所有数据时，DTOs 也很有帮助，同时甚至可以减少客户端与服务端之间的请求次数。</p>
 <p>使用 DTOs，我们可以在不影响领域设计的情况下，<strong>在领域模型中建立不同的视图</strong>，比如根据客户需求创建同一领域的不同表现形式，为解决复杂问题提供了灵活性。</p>
@@ -734,8 +734,6 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
-
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--

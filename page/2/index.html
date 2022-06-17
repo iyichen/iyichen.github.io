@@ -409,7 +409,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/c-javafx.png" alt=""></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/c-javafx.png" alt=""></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2021/05/javafx-use-external-font/" rel="contents">
@@ -586,7 +586,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/210111-hashmap-head.jpg" alt="image"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-head.jpg" alt="image"></p>
 <p>本文仅对<code>HashMap(1.8)</code>源码中的部分实现细节做一个记录，不涉及到具体源码解析。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -764,7 +764,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/201201-head-flink.jpg" alt="apache-flink"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/201201-head-flink.jpg" alt="apache-flink"></p>
 <p>本文仅对MacOS下安装<code>Apache Flink</code>做一个记录。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -942,7 +942,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/201125-head-request-async.jpg" alt="笔记"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/201125-head-request-async.jpg" alt="笔记"></p>
 <p>最近遇到了一个问题，在 <code>Spring</code> 的异步方法中 (<code>@Async</code>) 使用 <code>HttpServletRequest</code> 时，发现不仅在方法中无法通过 <code>request.getParameter()</code> 获取请求参数，而且甚至还影响到了后续请求，导致后续的有些请求也无法获取到请求参数。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1120,7 +1120,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/201126-head-wechat-pay.jpg" alt="wechat-pay"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/201126-head-wechat-pay.jpg" alt="wechat-pay"></p>
 <p>本文仅对微信支付H5对接中(V2版本)可能产生的问题做一个备注。<br>微信支付对接H5文档V2地址：<a href="https://pay.weixin.qq.com/wiki/doc/api/index.html" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/index.html</a></p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1298,7 +1298,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/200916-head-mysql-date.jpg" alt="image"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/200916-head-mysql-date.jpg" alt="image"></p>
 <p>在 <code>MySQL</code> 中需要记录时间时，通常使用 <code>DATE</code> 来表示日期，<code>DATETIME</code> 来表示时间，本文主要讲讲这两个类型之间的转换。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1476,7 +1476,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/200708-head-springboot.jpg" alt="image"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/200708-head-springboot.jpg" alt="image"></p>
 <h2 id="多环境配置"><a href="#多环境配置" class="headerlink" title="多环境配置"></a>多环境配置</h2><p>我们知道 <code>springboot</code> 是支持多环境配置的，具体做法就是将 <code>application.properties</code> 按照不同环境命名，例如我们需要区分两个环境，开发环境(<code>dev</code>) 和 正式环境(<code>rc</code>)，那我们就可以使用如下配置：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- src/main/java</span><br><span class="line">- src/main/resources</span><br><span class="line">    - application.properties # 基础公共配置，如应用端口，应用名称</span><br><span class="line">    - application-dev.properties # 开发环境配置，如开发环境数据库信息</span><br><span class="line">    - application-rc.properties # 正式环境配置，如正式环境数据库信息</span><br></pre></td></tr></table></figure>
 <p>只要将这三份配置文件放在 <code>resources</code> 文件夹中，通过打包后的启动命令 <code>java -jar xx.jar --spring.profiles.active=rc</code>  就可以让应用使用 <code>application-rc.properties</code> 中的配置。</p>
@@ -1656,7 +1656,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/200520-head-manacher.jpg" alt="200520-head-manacher"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/200520-head-manacher.jpg" alt="200520-head-manacher"></p>
 <p>马拉车算法 (Manacher’s Algorithm) 主要用于处理字符串中的回文串，它可以在的<code>O(n)</code>时间里计算出以每个字符为中心的最长回文字符串。</p>
 <blockquote>
 <p>回文，英文palindrome，指一个顺着读和反过来读都一样的字符串，如”abba”、“abccba”、12321、123321都是回文，而“abcde”和“ababab”则不是回文。</p>
@@ -1837,7 +1837,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/200508-head-varint.jpg" alt="200508-head-varint"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/200508-head-varint.jpg" alt="200508-head-varint"></p>
 <h2 id="varint"><a href="#varint" class="headerlink" title="varint"></a>varint</h2><p>varint是一种压缩二进制整数的方法，编码过程中会将二进制中高位中连续n个0舍弃，因而对于较小的整数有很好的压缩效果。以无符号int32为例，正常存储需要4个字节，而经过varint编码后，对于较小的整数只需要1个字节。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -2015,7 +2015,7 @@
 
       
         
-          <p><img src="https://image.iyichen.xyz/blog/200413-head-aoi.jpg" alt="200413-head-aoi"></p>
+          <p><img src="https://image.iyichen.xyz/file/ii-image/blog/200413-head-aoi.jpg" alt="200413-head-aoi"></p>
 <p>AOI (Area Of Interest) 算法应该算是游戏的基础核心了，AOI 进出事件会触发很多的业务事件。简单来说，地图上的每个玩家都在一个 AOI 区域内，当玩家状态发生改变时 (如移动，动作行为等) ，需要该将玩家的信息广播给 AOI 区域内的所有玩家，而这些玩家收到这条广播消息时，就要做出对应的响应状态。</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -2230,8 +2230,6 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
-
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--

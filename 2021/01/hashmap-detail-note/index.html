@@ -90,14 +90,14 @@
 <meta property="og:site_name" content="自留地">
 <meta property="og:description" content="本文仅对HashMap(1.8)源码中的部分实现细节做一个记录，不涉及到具体源码解析。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/210111-hashmap-head.jpg">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/210111-hashmap-hash.png">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/210111-hashmap-resize.png">
-<meta property="og:updated_time" content="2021-09-02T11:21:49.914Z">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-head.jpg">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-hash.png">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-resize.png">
+<meta property="og:updated_time" content="2022-06-17T05:49:44.783Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap实现备注">
 <meta name="twitter:description" content="本文仅对HashMap(1.8)源码中的部分实现细节做一个记录，不涉及到具体源码解析。">
-<meta name="twitter:image" content="https://image.iyichen.xyz/blog/210111-hashmap-head.jpg">
+<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-head.jpg">
 
 
 
@@ -410,7 +410,7 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/blog/210111-hashmap-head.jpg" alt="image"></p>
+        <p><img src="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-head.jpg" alt="image"></p>
 <p>本文仅对<code>HashMap(1.8)</code>源码中的部分实现细节做一个记录，不涉及到具体源码解析。</p>
 <a id="more"></a>
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>首先明确几个概念：</p>
@@ -460,11 +460,11 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Computes key.hashCode() and spreads (XORs) higher bits of hash</span></span><br><span class="line"><span class="comment"> * to lower.  Because the table uses power-of-two masking, sets of</span></span><br><span class="line"><span class="comment"> * hashes that vary only in bits above the current mask will</span></span><br><span class="line"><span class="comment"> * always collide. (Among known examples are sets of Float keys</span></span><br><span class="line"><span class="comment"> * holding consecutive whole numbers in small tables.)  So we</span></span><br><span class="line"><span class="comment"> * apply a transform that spreads the impact of higher bits</span></span><br><span class="line"><span class="comment"> * downward. There is a tradeoff between speed, utility, and</span></span><br><span class="line"><span class="comment"> * quality of bit-spreading. Because many common sets of hashes</span></span><br><span class="line"><span class="comment"> * are already reasonably distributed (so don't benefit from</span></span><br><span class="line"><span class="comment"> * spreading), and because we use trees to handle large sets of</span></span><br><span class="line"><span class="comment"> * collisions in bins, we just XOR some shifted bits in the</span></span><br><span class="line"><span class="comment"> * cheapest possible way to reduce systematic lossage, as well as</span></span><br><span class="line"><span class="comment"> * to incorporate impact of the highest bits that would otherwise</span></span><br><span class="line"><span class="comment"> * never be used in index calculations because of table bounds.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> h;</span><br><span class="line">  <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>此处为什么需要重新定义一个hash方法，而不用key的hashCode方法呢？通过方法注释可以看到，因为哈希表(即HashMap)的大小使用的是2次幂，作者认为很容易产生冲突（假设大小<code>n=16</code>，那么<code>(n-1)</code>转为2进制就是<code>1111</code>，对于<code>int</code>类型的hashCode而言，只用到了最低4位进行计算），因此作者在速度，实用性和位扩展的质量上做了中和，而且现在的hashCode已经是合理分布了，同时HashMap也使用了树结构来解决大规模Hash冲突的问题，因而取了一种比较简单的方案，即高16位不变，将低16位和高16位做了一个异或。</p>
 <p>而数组中的索引使用的是<code>(n-1) &amp; hash</code>，最终通过<code>key</code>计算数组索引就是下面这样：</p>
-<p><img src="https://image.iyichen.xyz/blog/210111-hashmap-hash.png" alt="map-hash"></p>
+<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-hash.png" alt="map-hash"></p>
 <h2 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h2><p>在哈希表的元素数量超过了扩容阈值时，哈希表会进行扩容，将大小扩大为原来的2倍：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Initializes or doubles table size.  If null, allocates in</span></span><br><span class="line"><span class="comment">* accord with initial capacity target held in field threshold.</span></span><br><span class="line"><span class="comment">* Otherwise, because we are using power-of-two expansion, the</span></span><br><span class="line"><span class="comment">* elements from each bin must either stay at same index, or move</span></span><br><span class="line"><span class="comment">* with a power of two offset in the new table.</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> the table</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">   <span class="comment">// .....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>当初始化或者需要扩容时会调用<code>resize()</code>方法，扩容时会将容量变为原本大小的<strong>2倍</strong>，而且这样做会有个好处，因为容量大小使用的是2次幂，因此一旦触发了扩容操作，那么原本的key要不在原位置，要不只需要在偏移2次幂个位置(其实就是在原位置移动之前容量大小个位置)(在链表的情况下)，这样做的好处就是可以节省重新计算hash的时间：</p>
-<p><img src="https://image.iyichen.xyz/blog/210111-hashmap-resize.png" alt="map-resize"></p>
+<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210111-hashmap-resize.png" alt="map-resize"></p>
 
       
     </div>
@@ -748,8 +748,6 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
-
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--

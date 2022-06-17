@@ -88,12 +88,12 @@
 <meta property="og:url" content="https://iyichen.xyz/2021/09/intellij-idea-thread-debug-tips/index.html">
 <meta property="og:site_name" content="自留地">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/c-tips2.jpg">
-<meta property="og:image" content="https://image.iyichen.xyz/blog/210901-debug-tips.png">
-<meta property="og:updated_time" content="2022-01-11T13:21:24.789Z">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/c-tips2.jpg">
+<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210901-debug-tips.png">
+<meta property="og:updated_time" content="2022-06-17T05:49:44.874Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一个没什么用的IntelliJ IDEA调试多线程的小知识">
-<meta name="twitter:image" content="https://image.iyichen.xyz/blog/c-tips2.jpg">
+<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/c-tips2.jpg">
 
 
 
@@ -406,7 +406,7 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/blog/c-tips2.jpg" alt=""></p>
+        <p><img src="https://image.iyichen.xyz/file/ii-image/blog/c-tips2.jpg" alt=""></p>
 <a id="more"></a>
 <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>今天在 <code>SpringBoot</code> 中写了一段这样的代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      System.out.println(<span class="string">"Do something"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -414,7 +414,7 @@
 <h2 id="猜测"><a href="#猜测" class="headerlink" title="猜测"></a>猜测</h2><p>按照常规理解，<code>new Thread()</code> 中应该并不会影响到整个项目的正常启动。</p>
 <p>猜测是由于编辑器，也就是 <code>IntelliJ IDEA</code> 调试的配置问题。</p>
 <h2 id="尝试"><a href="#尝试" class="headerlink" title="尝试"></a>尝试</h2><p>尝试在断点处右键，设置断点中断条件时，发现了线程选项：</p>
-<p><img src="https://image.iyichen.xyz/blog/210901-debug-tips.png" alt=""></p>
+<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210901-debug-tips.png" alt=""></p>
 <p>如图，在 <code>Suspend</code> 选项中，默认选中的为 <code>All</code>，也就是只要有一个线程进入了 <code>Debug</code> 状态，其他所有的线程都会暂时中止。因此将选项修改为 <code>Thread</code> 即可。</p>
 <p>可以查看官网教程：<a href="https://www.jetbrains.com/help/idea/using-breakpoints.html#breakpoint-properties" target="_blank" rel="noopener">https://www.jetbrains.com/help/idea/using-breakpoints.html#breakpoint-properties</a></p>
 <blockquote>
@@ -710,8 +710,6 @@
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
-
-  <div class="footer-custom"><a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img style="height:19px; opacity:0.7; margin-top:5px;" src="https://www.upyun.com/static/img/%E6%A0%B7%E5%BC%8F%E5%9B%BE.7cf927c.png"></a></div>
 
 
 <!--
