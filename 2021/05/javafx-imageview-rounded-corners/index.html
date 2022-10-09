@@ -88,14 +88,14 @@
 <meta property="og:url" content="https://iyichen.xyz/2021/05/javafx-imageview-rounded-corners/index.html">
 <meta property="og:site_name" content="自留地">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/c-javafx.png">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210512-01.png">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210512-02.png">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/210512-03.png">
-<meta property="og:updated_time" content="2022-06-17T05:49:44.878Z">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/c-javafx.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/21/05/210512-01.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/21/05/210512-02.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/21/05/210512-03.png">
+<meta property="og:updated_time" content="2022-10-09T17:36:32.445Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaFX ImageView生成圆角">
-<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/c-javafx.png">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/c-javafx.png">
 
 
 
@@ -408,21 +408,21 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/file/ii-image/blog/c-javafx.png" alt=""></p>
+        <p><img src="https://f004.backblazeb2.com/file/i-static/c-javafx.png" alt=""></p>
 <a id="more"></a>
 <p>本文以使用 <code>ImageView</code> 创建用户头像为例</p>
 <h2 id="默认样式"><a href="#默认样式" class="headerlink" title="默认样式"></a>默认样式</h2><p>先看下默认样式：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageDemo</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(Stage stage)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        VBox root = <span class="keyword">new</span> VBox();</span><br><span class="line">        root.setAlignment(Pos.CENTER);</span><br><span class="line">        root.setSpacing(<span class="number">20</span>);</span><br><span class="line"></span><br><span class="line">      	<span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">        ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">        cover.setFitWidth(size);</span><br><span class="line">        cover.setFitHeight(size);</span><br><span class="line">        </span><br><span class="line">        root.getChildren().add(cover);</span><br><span class="line"></span><br><span class="line">        Scene scene = <span class="keyword">new</span> Scene(root, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">        scene.getStylesheets().add(<span class="keyword">this</span>.getClass().getResource(<span class="string">"/css/style.css"</span>).toExternalForm());</span><br><span class="line">        stage.setScene(scene);</span><br><span class="line">        stage.setTitle(<span class="string">"Image Demo"</span>);</span><br><span class="line">        scene.setRoot(root);</span><br><span class="line">        stage.show();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        launch(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>运行效果：</p>
-<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210512-01.png" alt="210512-01"></p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/21/05/210512-01.png" alt="210512-01"></p>
 <h2 id="修改圆角"><a href="#修改圆角" class="headerlink" title="修改圆角"></a>修改圆角</h2><p>圆角效果可以使用 <code>ImageView.clip()</code> 方法完成：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">cover.setFitWidth(size);</span><br><span class="line">cover.setFitHeight(size);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置圆角弧宽高为0.25=arc/size</span></span><br><span class="line"><span class="keyword">int</span> arc = <span class="number">25</span>;</span><br><span class="line">Rectangle clip = <span class="keyword">new</span> Rectangle(cover.getFitWidth(), cover.getFitHeight());</span><br><span class="line">clip.setArcWidth(arc);</span><br><span class="line">clip.setArcHeight(arc);</span><br><span class="line">cover.setClip(clip);</span><br></pre></td></tr></table></figure>
 <p>将圆角弧度设置为 <code>25</code> 后：</p>
-<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210512-02.png" alt="210512-02"></p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/21/05/210512-02.png" alt="210512-02"></p>
 <h2 id="设置为圆形"><a href="#设置为圆形" class="headerlink" title="设置为圆形"></a>设置为圆形</h2><p>圆形头像可以设置弧宽高为头像的宽高，即设置为 <code>1</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> size = <span class="number">100</span>;</span><br><span class="line">ImageView cover = <span class="keyword">new</span> ImageView(<span class="keyword">new</span> Image(<span class="keyword">new</span> FileInputStream(<span class="string">"/Users/yi/Desktop/pic.png"</span>)));</span><br><span class="line">cover.setFitWidth(size);</span><br><span class="line">cover.setFitHeight(size);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置圆角弧宽高为1=arc/size</span></span><br><span class="line"><span class="keyword">int</span> arc = <span class="number">100</span>;</span><br><span class="line">Rectangle clip = <span class="keyword">new</span> Rectangle(cover.getFitWidth(), cover.getFitHeight());</span><br><span class="line">clip.setArcWidth(arc);</span><br><span class="line">clip.setArcHeight(arc);</span><br><span class="line">cover.setClip(clip);</span><br></pre></td></tr></table></figure>
 <p>圆形效果：</p>
-<p><img src="https://image.iyichen.xyz/file/ii-image/blog/210512-03.png" alt="210512-03"></p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/21/05/210512-03.png" alt="210512-03"></p>
 
       
     </div>

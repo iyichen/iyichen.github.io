@@ -90,12 +90,12 @@
 <meta property="og:site_name" content="自留地">
 <meta property="og:description" content="最近遇到了一个问题，在 Spring 的异步方法中 (@Async) 使用 HttpServletRequest 时，发现不仅在方法中无法通过 request.getParameter() 获取请求参数，而且甚至还影响到了后续请求，导致后续的有些请求也无法获取到请求参数。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/201125-head-request-async.jpg">
-<meta property="og:updated_time" content="2022-06-17T05:49:44.942Z">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/20/11/201125-head-request-async.jpg">
+<meta property="og:updated_time" content="2022-10-09T17:37:07.537Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在Spring异步方法中使用HttpServletRequest可能产生的问题">
 <meta name="twitter:description" content="最近遇到了一个问题，在 Spring 的异步方法中 (@Async) 使用 HttpServletRequest 时，发现不仅在方法中无法通过 request.getParameter() 获取请求参数，而且甚至还影响到了后续请求，导致后续的有些请求也无法获取到请求参数。">
-<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/201125-head-request-async.jpg">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/20/11/201125-head-request-async.jpg">
 
 
 
@@ -408,7 +408,7 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/file/ii-image/blog/201125-head-request-async.jpg" alt="笔记"></p>
+        <p><img src="https://f004.backblazeb2.com/file/i-static/20/11/201125-head-request-async.jpg" alt="笔记"></p>
 <p>最近遇到了一个问题，在 <code>Spring</code> 的异步方法中 (<code>@Async</code>) 使用 <code>HttpServletRequest</code> 时，发现不仅在方法中无法通过 <code>request.getParameter()</code> 获取请求参数，而且甚至还影响到了后续请求，导致后续的有些请求也无法获取到请求参数。</p>
 <a id="more"></a>
 <h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p>新建一个简单的 <code>Springboot</code> 项目，使用内置<code>Tomcat</code> 启动：</p>

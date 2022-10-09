@@ -90,14 +90,14 @@
 <meta property="og:site_name" content="自留地">
 <meta property="og:description" content="国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/191218-head-lambda.png">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/191218-lambda@edge.png">
-<meta property="og:image" content="https://image.iyichen.xyz/file/ii-image/blog/191218-resize-lambda@edge.png">
-<meta property="og:updated_time" content="2022-06-17T05:49:44.909Z">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-lambda.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-lambda@edge.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-lambda@edge.png">
+<meta property="og:updated_time" content="2022-10-09T17:35:44.104Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
 <meta name="twitter:description" content="国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。">
-<meta name="twitter:image" content="https://image.iyichen.xyz/file/ii-image/blog/191218-head-lambda.png">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-lambda.png">
 
 
 
@@ -410,7 +410,7 @@
       
 
       
-        <p><img src="https://image.iyichen.xyz/file/ii-image/blog/191218-head-lambda.png" alt="191218-head-lambda"></p>
+        <p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-lambda.png" alt="191218-head-lambda"></p>
 <p>国内的云存储厂商(如阿里云，七牛云等)提供了比较方便的图片处理方案，只需要添加不同的图片访问参数值，就可以实现图片的缩放。AmazonS3并没有提供现成的方案，但我们可以通过Cloudfront+Lambda@Edge实现图片的缩放功能。</p>
 <a id="more"></a>
 <h2 id="Lambda-Edge"><a href="#Lambda-Edge" class="headerlink" title="Lambda@Edge"></a>Lambda@Edge</h2><p>Lambda@Edge可以认为是运行在Cloudfront上的Lambda，不同的是Lambda@Edge只支持<code>Nodejs</code>和<code>Python</code>两种语言，而且Lambda@Edge仅可在 <strong>美国东部 (弗吉尼亚北部) us-east-1</strong> 配置。</p>
@@ -421,8 +421,8 @@
 <li>源响应(Origin Response)：当Cloudfront缓存未命中，并且得到源响应后执行</li>
 <li>查看器响应(Viewer Response)：当Cloudfront命中缓存或者得到了源响应后执行，就是每个客户端请求都会执行</li>
 </ul>
-<p><img src="https://image.iyichen.xyz/file/ii-image/blog/191218-lambda@edge.png" alt="from https://docs.aws.amazon.com/zh_cn/lambda/latest/dg/lambda-edge.html"></p>
-<h2 id="方案架构"><a href="#方案架构" class="headerlink" title="方案架构"></a>方案架构</h2><p><img src="https://image.iyichen.xyz/file/ii-image/blog/191218-resize-lambda@edge.png" alt="lambda@edge"></p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-lambda@edge.png" alt="from https://docs.aws.amazon.com/zh_cn/lambda/latest/dg/lambda-edge.html"></p>
+<h2 id="方案架构"><a href="#方案架构" class="headerlink" title="方案架构"></a>方案架构</h2><p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-lambda@edge.png" alt="lambda@edge"></p>
 <h3 id="Lambda配置"><a href="#Lambda配置" class="headerlink" title="Lambda配置"></a>Lambda配置</h3><p>我们在这里配置了2个Lambda函数：<br>1.配置于源请求，用于检查请求图片地址是否合法，判断是否需要修改请求。<br>2.配置于源响应，用于生成缩略图。</p>
 <p>配置于源请求的Lambda函数其实是可以省略的，此处我们希望缩略图能够统一存储，所以此函数主要用于修改请求地址，例如客户端请求图片为<code>/a/b/c_200x200.jpg</code>，在Lambda函数处理后，请求至S3的地址会修改为<code>/thumbnails/200x200/a/b/c.jpg</code>，将所有缩略图存储在<code>thumbnails</code>文件夹下。</p>
 <h3 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h3><p>1.客户端请求Cloudfront<br>2.Cloudfront上未命中缓存，请求S3之前执行Lambda函数，修改请求地址<br>3.获取S3响应。如果S3返回图片不存在，执行Lambda<br>4.Lambda下载原图并生成缩略图，转存至S3，将图片返回给Cloudfront<br>5.Cloudfront返回结果给客户端</p>
