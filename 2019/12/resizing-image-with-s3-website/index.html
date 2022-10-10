@@ -71,7 +71,7 @@
 
 
 
-  <meta name="keywords" content="AWS,Lambda,Thumbnail,S3,APIGateway,">
+  <meta name="keywords" content="AWS,S3,Lambda,Thumbnail,APIGateway,">
 
 
 
@@ -83,7 +83,7 @@
 
 
 <meta name="description" content="上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为S3静态网站地址。 S3静态网站地址格式：{bucketName}.s3-website-{region}.amazonaws">
-<meta name="keywords" content="AWS,Lambda,Thumbnail,S3,APIGateway">
+<meta name="keywords" content="AWS,S3,Lambda,Thumbnail,APIGateway">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Amazon S3-Website生成缩略图">
 <meta property="og:url" content="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/index.html">
@@ -295,7 +295,7 @@
     <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="尘伊">
+      <meta itemprop="name" content="辰伊">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/zm.jpg">
     </span>
@@ -453,7 +453,7 @@
         <ul class="post-copyright">
   <li class="post-copyright-author">
     <strong>本文作者：</strong>
-    尘伊
+    辰伊
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
@@ -474,11 +474,11 @@
           
             <a href="/tags/aws/" rel="tag"># AWS</a>
           
+            <a href="/tags/s3/" rel="tag"># S3</a>
+          
             <a href="/tags/lambda/" rel="tag"># Lambda</a>
           
             <a href="/tags/thumbnail/" rel="tag"># Thumbnail</a>
-          
-            <a href="/tags/s3/" rel="tag"># S3</a>
           
             <a href="/tags/apigateway/" rel="tag"># APIGateway</a>
           
@@ -493,8 +493,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/10/jmx-monitoring-jvm/" rel="next" title="JMX简单使用">
-                <i class="fa fa-chevron-left"></i> JMX简单使用
+              <a href="/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" rel="next" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
+                <i class="fa fa-chevron-left"></i> 使用Amazon Cloudfront+Lambda@Edge生成缩略图
               </a>
             
           </div>
@@ -503,8 +503,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" rel="prev" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
-                使用Amazon Cloudfront+Lambda@Edge生成缩略图 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/12/rpc-interface-design/" rel="prev" title="RPC接口设计的一些想法">
+                RPC接口设计的一些想法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -574,9 +574,9 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="尘伊">
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="辰伊">
             
-              <p class="site-author-name" itemprop="name">尘伊</p>
+              <p class="site-author-name" itemprop="name">辰伊</p>
               <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
           </div>
 
@@ -587,7 +587,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -609,7 +609,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">67</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

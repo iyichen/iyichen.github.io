@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+
+
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Algorithm,Design,Petrinet,StateMachine,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和序上的内容。 看懂Petri-Net">
+<meta name="keywords" content="Java,Algorithm,Design,Petrinet,StateMachine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Petri-Net入门">
+<meta property="og:url" content="https://iyichen.xyz/2022/10/petri-net/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和序上的内容。 看懂Petri-Net">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-4.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-5.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-6.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png">
+<meta property="og:updated_time" content="2022-10-10T04:48:38.765Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Petri-Net入门">
+<meta name="twitter:description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和序上的内容。 看懂Petri-Net">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://iyichen.xyz/2022/10/petri-net/">
+
+
+
+
+
+  <title>Petri-Net入门 | 自留地</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?00f982f755818931cf2f1dc7bc1d7aa3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">自留地</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">得之坦然，失之淡然</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-追番">
+          <a href="/bangumis/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br>
+            
+            追番
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
+            
+            站点地图
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/10/petri-net/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="辰伊">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/zm.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Petri-Net入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-10T00:00:00+08:00">
+                2022-10-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数&#58;</span>
+                
+                <span title="本文字数">
+                  583
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和序上的内容。</p>
+<h2 id="看懂Petri-Net"><a href="#看懂Petri-Net" class="headerlink" title="看懂Petri-Net"></a>看懂Petri-Net</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png" alt="图1"></p>
+<a id="more"></a>
+<p>先解释下这个图中的元素：</p>
+<ul>
+<li>Place(P)：蓝色的圆</li>
+<li>Transition(T)：黄色的方形</li>
+<li>Arc(A)：红色的连线</li>
+<li>Weight(W)：Arc上的数字，<strong>如果没有写，则为1</strong></li>
+<li>Token：紫色的圆</li>
+</ul>
+<p>其中<code>Arc</code>只能连接<code>Place</code>和<code>Transition</code>，也就是下面这种情况是<strong>不允许</strong>的：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png" alt=""></p>
+<p><code>Token</code>只存在<code>Place</code>中，理论上来说一个<code>Place</code>中可以存储的<code>Token</code>是没有上限的（当然也可以根据需求做限制）,<code>Token</code>可以在<code>Place</code>和<code>Transition</code>中移动，每次移动的个数由<code>Weight</code>决定，也就是当<code>Place</code>中存在的<code>Token</code>数大于等于<code>Weight</code>时，才有可能进行移动。</p>
+<p>以例图为例，<code>P1</code>要到达<code>P2</code>需要在<code>P1</code>中存在至少一个<code>Token</code>，因此可以从<code>P1</code>进入到<code>P2</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-4.png" alt=""></p>
+<p>而<code>P2</code>需要2个<code>Token</code>才允许通过<code>T2</code>，而<code>P2</code>现在仅有1个<code>Token</code>，所以现在不允许通过<code>T2</code>，而此时<code>P1</code>到达<code>P2</code>的条件还是满足，因此再执行一次<code>P1</code>到<code>P2</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-5.png" alt=""></p>
+<p>这时<code>P2</code>满足条件可以通过<code>T2</code>，而通过<code>T2</code>时，<code>T2</code>会重新生产出2个<code>Token</code>（<code>T2</code>到<code>P1</code>的<code>Weight</code>为2）：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-6.png" alt=""></p>
+<h2 id="另一个例子"><a href="#另一个例子" class="headerlink" title="另一个例子"></a>另一个例子</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png" alt=""></p>
+<p>可以看到要通过通过<code>T1</code>需要<code>P1</code>和<code>P3</code>各自拥有至少1个<code>Token</code>，而通过<code>T1</code>后会产生1个<code>Token</code>，因此通过后：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png" alt=""></p>
+<p>此时<code>P2</code>有2种选择，通过<code>T2</code>或者<code>T3</code>，假设选择<code>T3</code>，然后<code>T3</code>会生产2个<code>Token</code>，分别提供给<code>P1</code>和<code>P3</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png" alt=""></p>
+<h2 id="画一个生产者消费者模型"><a href="#画一个生产者消费者模型" class="headerlink" title="画一个生产者消费者模型"></a>画一个生产者消费者模型</h2><p>最简单的一个生产者消费者模型：</p>
+<ul>
+<li><p>生产的条件：允许生产</p>
+</li>
+<li><p>消费的条件：允许消费并且生产完成</p>
+</li>
+</ul>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png" alt=""></p>
+<p>同时<code>T(生产行为)</code>的下一步就是<code>P(产品生产完成)</code>，而<code>T(准备消费产品)</code>的下一步就是<code>P(消费产品)</code>，而消费产品后就可以重新消费，同时可以重新开始生产：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png" alt=""></p>
+<p>最后就是初始的触发条件了，能够让状态动起来，可以看到只要在<code>P(可以生产)</code> 和 <code>P(可以消费)</code>各自放入一个<code>Token</code>，就能让整个系统开始运转：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    辰伊
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://iyichen.xyz/2022/10/petri-net/" title="Petri-Net入门">https://iyichen.xyz/2022/10/petri-net/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># Java</a>
+          
+            <a href="/tags/algorithm/" rel="tag"># Algorithm</a>
+          
+            <a href="/tags/design/" rel="tag"># Design</a>
+          
+            <a href="/tags/petrinet/" rel="tag"># Petrinet</a>
+          
+            <a href="/tags/statemachine/" rel="tag"># StateMachine</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/05/misc-note1/" rel="next" title="非常规爬虫姿势">
+                <i class="fa fa-chevron-left"></i> 非常规爬虫姿势
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/zm.jpg" alt="辰伊">
+            
+              <p class="site-author-name" itemprop="name">辰伊</p>
+              <p class="site-description motion-element" itemprop="description">一个空想主义者</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/iyichen" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:iyichen@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tutorials.jenkov.com/" title="Jenkov" target="_blank">Jenkov</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dzone.com/" title="DZone" target="_blank">DZone</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#看懂Petri-Net"><span class="nav-number">1.</span> <span class="nav-text">看懂Petri-Net</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另一个例子"><span class="nav-number">2.</span> <span class="nav-text">另一个例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#画一个生产者消费者模型"><span class="nav-number">3.</span> <span class="nav-text">画一个生产者消费者模型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yichen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+<!--
+<div>
+  <a href="http://www.beian.miit.gov.cn">浙ICP备18016077号</a>
+</div>
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <!-- <script src="/js/src/Valine.min.js"></script> -->
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'sasdJibp23EOXoGvXDxUAiDQ-MdYXbMMI',
+        appKey: '3UQsz1OyMb3Knz5rERw7DixV',
+        placeholder: '说点什么吧~',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+        serverURLs: 'https://sasdjibp.api.lncldglobal.com',
+    });
+
+    //增加以下六行代码去除 power by valine
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+</body>
+  <!-- <script type="text/javascript" src="/js/src/custom/clicksocialvalue.js"></script>
+  <script type="text/javascript" src="/js/src/custom/clicklove.js"></script> -->
+</html>
