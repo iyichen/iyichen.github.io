@@ -82,13 +82,13 @@
 
 
 
-<meta name="description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri-Net">
+<meta name="description" content="前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri Nets">
 <meta name="keywords" content="Java,Algorithm,Design,Petrinet,StateMachine">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Petri-Net入门">
+<meta property="og:title" content="Petri Net入门">
 <meta property="og:url" content="https://iyichen.xyz/2022/10/petri-net/index.html">
 <meta property="og:site_name" content="自留地">
-<meta property="og:description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri-Net">
+<meta property="og:description" content="前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri Nets">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png">
@@ -98,13 +98,15 @@
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-19.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-20.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png">
 <meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png">
-<meta property="og:updated_time" content="2022-10-10T04:56:03.086Z">
+<meta property="og:updated_time" content="2022-10-11T17:26:57.853Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Petri-Net入门">
-<meta name="twitter:description" content="前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri-Net">
+<meta name="twitter:title" content="Petri Net入门">
+<meta name="twitter:description" content="前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri Nets">
 <meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
 
 
@@ -141,7 +143,7 @@
 
 
 
-  <title>Petri-Net入门 | 自留地</title>
+  <title>Petri Net入门 | 自留地</title>
   
 
 
@@ -315,7 +317,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Petri-Net入门</h1>
+          <h1 class="post-title" itemprop="name headline">Petri Net入门</h1>
         
 
         <div class="post-meta">
@@ -381,7 +383,7 @@
                   <span class="post-meta-item-text">本文字数&#58;</span>
                 
                 <span title="本文字数">
-                  584
+                  712
                 </span>
               
 
@@ -418,8 +420,8 @@
       
 
       
-        <p>前段时间有朋友问了关于Petri-Net相关的程序问题，就花了点时间学习了下，因此本文是Petri-Net自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。</p>
-<h2 id="看懂Petri-Net"><a href="#看懂Petri-Net" class="headerlink" title="看懂Petri-Net"></a>看懂Petri-Net</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png" alt="图1"></p>
+        <p>前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。</p>
+<h2 id="看懂Petri-Nets"><a href="#看懂Petri-Nets" class="headerlink" title="看懂Petri Nets"></a>看懂Petri Nets</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png" alt="图1"></p>
 <a id="more"></a>
 <p>先解释下这个图中的元素：</p>
 <ul>
@@ -431,18 +433,24 @@
 </ul>
 <p>其中<code>Arc</code>只能连接<code>Place</code>和<code>Transition</code>，也就是下面这种情况是<strong>不允许</strong>的：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png" alt=""></p>
-<p><code>Token</code>只存在<code>Place</code>中，理论上来说一个<code>Place</code>中可以存储的<code>Token</code>是没有上限的（当然也可以根据需求做限制）,<code>Token</code>可以在<code>Place</code>和<code>Transition</code>中移动，每次移动的个数由<code>Weight</code>决定，也就是当<code>Place</code>中存在的<code>Token</code>数大于等于<code>Weight</code>时，才有可能进行移动。</p>
-<p>以例图为例，<code>P1</code>要到达<code>P2</code>需要在<code>P1</code>中存在至少一个<code>Token</code>，因此可以从<code>P1</code>进入到<code>P2</code>：</p>
+<p><code>Token</code>只存在<code>Place</code>中，理论上来说一个<code>Place</code>中可以存储的<code>Token</code>是没有上限的（当然也可以根据需求做限制）。</p>
+<p>当<code>Transtion</code>的入口所有<code>Place</code>都满足条件（即<code>Place</code>种的<code>Token</code>数量不少于<code>Weight</code>），以及出口的所有<code>Place</code>都满足条件（即<code>Place</code>种的<code>Token</code>数量加上<code>Weight</code>的数量不能超过<code>Place</code>本身允许的<code>Token</code>数量上限）,那么称这种情况为<code>Fireable</code>。当满足<code>Fireable</code>时，就可以进行<code>Fire</code>，<code>Fire</code>就是从<code>Transition</code>的入口所有<code>Place</code>移除对应<code>Weight</code>数量的<code>Token</code>，同时在<code>Transition</code>的出口<code>Place</code>中添加对应<code>Weight</code>数量的<code>Token</code>。</p>
+<p>以例图为例：</p>
+<p><code>T1</code>的<code>Fire</code>条件是<code>P1</code>中至少有1个<code>Token</code>，因此<code>Fire</code>之后：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-4.png" alt=""></p>
-<p>而<code>P2</code>需要2个<code>Token</code>才允许通过<code>T2</code>，而<code>P2</code>现在仅有1个<code>Token</code>，所以现在不允许通过<code>T2</code>，而此时<code>P1</code>到达<code>P2</code>的条件还是满足，因此再执行一次<code>P1</code>到<code>P2</code>：</p>
+<p><code>T2</code>的<code>Fire</code>的条件是<code>P2</code>中至少有2个<code>Token</code>，但现在<code>P2</code>中只有1个，因此不能<code>Fire</code>。而<code>T1</code>的<code>Fire</code>条件仍然满足，因此<code>T1</code>执行<code>Fire</code>之后：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-5.png" alt=""></p>
-<p>这时<code>P2</code>满足条件可以通过<code>T2</code>，而通过<code>T2</code>时，<code>T2</code>会重新生产出2个<code>Token</code>（<code>T2</code>到<code>P1</code>的<code>Weight</code>为2）：</p>
+<p>此时<code>T2</code>的<code>Fire</code>条件已经满足，因此<code>T2</code>执行<code>Fire</code>之后，会生产2个<code>Token</code>：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-6.png" alt=""></p>
 <h2 id="另一个例子"><a href="#另一个例子" class="headerlink" title="另一个例子"></a>另一个例子</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png" alt=""></p>
-<p>可以看到要通过通过<code>T1</code>需要<code>P1</code>和<code>P3</code>各自拥有至少1个<code>Token</code>，而通过<code>T1</code>后会产生1个<code>Token</code>，因此通过后：</p>
+<p>可以看到<code>T1</code>的<code>Fire</code>条件是满足的，<code>Fire</code>后<code>T1</code>会生产1个<code>Token</code>到<code>P2</code>：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png" alt=""></p>
-<p>此时<code>P2</code>有2种选择，通过<code>T2</code>或者<code>T3</code>，假设选择<code>T3</code>，然后<code>T3</code>会生产2个<code>Token</code>，分别提供给<code>P1</code>和<code>P3</code>：</p>
+<p>此时<code>P2</code>有2种选择，因为<code>T2</code>和<code>T3</code>都是<code>Fireable</code>（当有多个<code>Transition</code>都是可以<code>Fire</code>时，可以使用不同的策略），假设选择<code>T3</code>，那么<code>T3</code>会生产1个<code>Token</code>给<code>P1</code>，同时生产1个<code>Token</code>给<code>P3</code>：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png" alt=""></p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>当<code>Petri Net</code>中没有可以<code>Fire</code>的<code>Transition</code>时，这时就进入了死锁，因此设计<code>Petri Net</code>的时候需要尽量避免这种情况，比如这种情况最终会进入死锁：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-19.png" alt=""></p>
+<p>最终会变成没有任何一个<code>Transition</code>可以进行<code>Fire</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-20.png" alt=""></p>
 <h2 id="画一个生产者消费者模型"><a href="#画一个生产者消费者模型" class="headerlink" title="画一个生产者消费者模型"></a>画一个生产者消费者模型</h2><p>最简单的一个生产者消费者模型：</p>
 <ul>
 <li><p>生产的条件：允许生产</p>
@@ -453,8 +461,9 @@
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png" alt=""></p>
 <p>同时<code>T(生产行为)</code>的下一步就是<code>P(产品生产完成)</code>，而<code>T(准备消费产品)</code>的下一步就是<code>P(消费产品)</code>，而消费产品后就可以重新消费，同时可以重新开始生产：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png" alt=""></p>
-<p>最后就是初始的触发条件了，能够让状态动起来，可以看到只要在<code>P(可以生产)</code> 和 <code>P(可以消费)</code>各自放入一个<code>Token</code>，就能让整个系统开始运转：</p>
+<p>最后就是初始的触发条件了，需要能够让状态动起来，可以看到需要在<code>P(可以生产)</code> 和 <code>P(可以消费)</code>各自放入一个<code>Token</code>：：</p>
 <p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png" alt=""></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>一个基于<code>java</code>的<code>Petri Net</code>实现：<a href="https://github.com/iyichen/petri-net" target="_blank" rel="noopener">https://github.com/iyichen/petri-net</a></p>
 
       
     </div>
@@ -475,7 +484,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://iyichen.xyz/2022/10/petri-net/" title="Petri-Net入门">https://iyichen.xyz/2022/10/petri-net/</a>
+    <a href="https://iyichen.xyz/2022/10/petri-net/" title="Petri Net入门">https://iyichen.xyz/2022/10/petri-net/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -690,7 +699,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#看懂Petri-Net"><span class="nav-number">1.</span> <span class="nav-text">看懂Petri-Net</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另一个例子"><span class="nav-number">2.</span> <span class="nav-text">另一个例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#画一个生产者消费者模型"><span class="nav-number">3.</span> <span class="nav-text">画一个生产者消费者模型</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#看懂Petri-Nets"><span class="nav-number">1.</span> <span class="nav-text">看懂Petri Nets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另一个例子"><span class="nav-number">2.</span> <span class="nav-text">另一个例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁"><span class="nav-number">3.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#画一个生产者消费者模型"><span class="nav-number">4.</span> <span class="nav-text">画一个生产者消费者模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现"><span class="nav-number">5.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
             
 
           </div>
