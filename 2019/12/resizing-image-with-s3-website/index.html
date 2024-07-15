@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为S3静态网站地址。 S3静态网站地址格式：&#123;bucketName&#125;.s3-website-&#123;re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Amazon S3-Website生成缩略图">
+<meta property="og:url" content="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为S3静态网站地址。 S3静态网站地址格式：&#123;bucketName&#125;.s3-website-&#123;re">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-apigateway.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-ec2.jpg">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-s3website.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-apigateway.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-cloudfront-behavior.png">
+<meta property="article:published_time" content="2019-12-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:37:20.240Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="AWS">
+<meta property="article:tag" content="Lambda">
+<meta property="article:tag" content="Thumbnail">
+<meta property="article:tag" content="S3">
+<meta property="article:tag" content="APIGateway">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-apigateway.png">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2019/12/resizing-image-with-s3-website/","path":"2019/12/resizing-image-with-s3-website/","title":"使用Amazon S3-Website生成缩略图"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用Amazon S3-Website生成缩略图 | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#S3Website-EC2"><span class="nav-number">1.</span> <span class="nav-text">S3Website+EC2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">方案架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E8%AF%B4%E6%98%8E"><span class="nav-number">1.1.1.</span> <span class="nav-text">流程说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2"><span class="nav-number">1.2.</span> <span class="nav-text">主要服务部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E6%89%98%E7%AE%A1-S3-website"><span class="nav-number">1.2.1.</span> <span class="nav-text">静态网站托管(S3-website)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EC2%E9%83%A8%E7%BD%B2"><span class="nav-number">1.2.2.</span> <span class="nav-text">EC2部署</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#S3Website-Lambda-APIGateway"><span class="nav-number">2.</span> <span class="nav-text">S3Website+Lambda+APIGateway</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E6%9E%B6%E6%9E%84-1"><span class="nav-number">2.1.</span> <span class="nav-text">方案架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E8%AF%B4%E6%98%8E-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">流程说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2-1"><span class="nav-number">2.2.</span> <span class="nav-text">主要服务部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E6%89%98%E7%AE%A1-S3-website-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">静态网站托管(S3-website)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lambda%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">Lambda函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">3.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E6%89%98%E7%AE%A1%E8%BF%94%E5%9B%9E307"><span class="nav-number">3.1.</span> <span class="nav-text">静态网站托管返回307</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cloudfront%E7%BC%93%E5%AD%98%E4%BA%86%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-number">3.2.</span> <span class="nav-text">Cloudfront缓存了重定向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#APIGateway%E5%AE%9E%E7%8E%B0302%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-number">3.3.</span> <span class="nav-text">APIGateway实现302重定向</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/12/resizing-image-with-s3-website/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用Amazon S3-Website生成缩略图 | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Amazon S3-Website生成缩略图
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-18 00:00:00" itemprop="dateCreated datePublished" datetime="2019-12-18T00:00:00+08:00">2019-12-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Learning/" itemprop="url" rel="index"><span itemprop="name">Learning</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-head-apigateway.png" alt="191218-head-apigateway"></p>
+<p>上一篇我们介绍了通过Cloudfront+Lambda@Edge生成缩率图，这篇简单介绍下另一种方式：通过S3静态网站托管实现生成缩略图。实现核心就是配置当S3返回404时，重定向到我们自己的图片处理服务完成缩略图创建。在这种配置下，我们需要指定Cloudfront的源为<strong>S3静态网站地址</strong>。</p>
+<p>S3静态网站地址格式：<code>&#123;bucketName&#125;.s3-website-&#123;region&#125;.amazonaws.com</code><br>S3地址格式：<code>&#123;bucketName&#125;.s3-&#123;region&#125;.amazonaws.com</code></p>
+<span id="more"></span>
+
+<h2 id="S3Website-EC2"><a href="#S3Website-EC2" class="headerlink" title="S3Website+EC2"></a>S3Website+EC2</h2><h3 id="方案架构"><a href="#方案架构" class="headerlink" title="方案架构"></a>方案架构</h3><p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-ec2.jpg" alt="from https://amazonaws-china.com/cn/blogs/china/image-processing-service-based-on-s3/"></p>
+<h4 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h4><p>1.客户端请求200x200的缩略图<br>2.S3中未存在图片，返回302状态码(此处实际应该使用307状态码)<br>3.客户端请求EC2上的图片处理服务<br>4.图片处理服务按照规则获取S3上原图<br>5.图片处理服务生成200x200的缩略图<br>6.将缩略图返回给客户端<br>7.将缩略图上传到S3中，方便下次访问</p>
+<h3 id="主要服务部署"><a href="#主要服务部署" class="headerlink" title="主要服务部署"></a>主要服务部署</h3><h4 id="静态网站托管-S3-website"><a href="#静态网站托管-S3-website" class="headerlink" title="静态网站托管(S3-website)"></a>静态网站托管(S3-website)</h4><p>在第2步中需要使用S3静态网站支持，才能返回307状态码：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-s3website.png" alt="191218-s3website"></p>
+<p>设置重定向规则：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">RoutingRules</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">RoutingRule</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Condition</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">KeyPrefixEquals</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">HttpErrorCodeReturnedEquals</span>&gt;</span>404<span class="tag">&lt;/<span class="name">HttpErrorCodeReturnedEquals</span>&gt;</span> <span class="comment">&lt;!-- 配置404规则 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Condition</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Redirect</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Protocol</span>&gt;</span>https<span class="tag">&lt;/<span class="name">Protocol</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">HostName</span>&gt;</span>imgzoom.example.com<span class="tag">&lt;/<span class="name">HostName</span>&gt;</span> <span class="comment">&lt;!-- 重定向域名 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ReplaceKeyPrefixWith</span>&gt;</span>resize?src=<span class="tag">&lt;/<span class="name">ReplaceKeyPrefixWith</span>&gt;</span> <span class="comment">&lt;!-- 重定向地址，src的值为图片的key --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">HttpRedirectCode</span>&gt;</span>307<span class="tag">&lt;/<span class="name">HttpRedirectCode</span>&gt;</span> <span class="comment">&lt;!-- 状态码307重定向 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Redirect</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">RoutingRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">RoutingRules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="EC2部署"><a href="#EC2部署" class="headerlink" title="EC2部署"></a>EC2部署</h4><p>EC2上需要部署图片处理服务，可以使用任意合适的代码，同时还需要新的图片处理域名配合S3使用。<br>核心处理逻辑为下载原图，生成缩略图，上传缩略图至S3，返回缩略图给客户端。</p>
+<h2 id="S3Website-Lambda-APIGateway"><a href="#S3Website-Lambda-APIGateway" class="headerlink" title="S3Website+Lambda+APIGateway"></a>S3Website+Lambda+APIGateway</h2><p>这种方案可以看成是替换了方案一的EC2：<br>1.用Lambda替换图片处理服务<br>2.用APIGateWay替换EC2的网关配置</p>
+<h3 id="方案架构-1"><a href="#方案架构-1" class="headerlink" title="方案架构"></a>方案架构</h3><p><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-resize-apigateway.png" alt="from https://amazonaws-china.com/cn/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/"></p>
+<h4 id="流程说明-1"><a href="#流程说明-1" class="headerlink" title="流程说明"></a>流程说明</h4><p>1.客户端请求缩略图<br>2.S3中未存在图片，返回307状态码<br>3.客户端请求APIGateway<br>4.APIGateway调用Lambda<br>5.Lambda执行图片处理，将生成的缩略图上传至S3<br>6.APIGateway返回301状态码<br>7.客户端重新请求缩略图</p>
+<h3 id="主要服务部署-1"><a href="#主要服务部署-1" class="headerlink" title="主要服务部署"></a>主要服务部署</h3><h4 id="静态网站托管-S3-website-1"><a href="#静态网站托管-S3-website-1" class="headerlink" title="静态网站托管(S3-website)"></a>静态网站托管(S3-website)</h4><p>同方案一，重定向规则中的<code>hostName</code>替换成APIGateway域名</p>
+<h4 id="Lambda函数"><a href="#Lambda函数" class="headerlink" title="Lambda函数"></a>Lambda函数</h4><p>Lambda函数实现方式可以使用多种语言，<code>java</code>，<code>nodejs</code>，<code>golang</code>都可以。<br>核心处理逻辑为下载原图，生成缩略图，上传缩略图至S3，返回301状态码通知客户端重新请求。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="静态网站托管返回307"><a href="#静态网站托管返回307" class="headerlink" title="静态网站托管返回307"></a>静态网站托管返回307</h3><p>一般情况下S3会与Cloudfront配合使用，按照Cloudfront文档说明(<a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/http-3xx-status-codes.html">CloudFront 如何处理来自源的 HTTP 3xx 状态代码</a>)，307状态码CloudFront不会重定向新位置：</p>
+<blockquote>
+<p>在 CloudFront 从 Amazon S3 存储桶或自定义源服务器中请求对象时，源有时会返回 HTTP 3xx 状态代码，这通常表示 URL 已更改（301 Moved Permanently 或 307 Temporary Redirect）或在 CloudFront 上次请求后未更改对象 (304 Not Modified)。CloudFront 将按照 CloudFront 分配中的设置指定的持续时间以及从源随对象一起返回的标头字段缓存 3xx 响应。</p>
+<p>如果源返回 301 或 307 状态代码，则 CloudFront 将不会重定向到新位置。</p>
+</blockquote>
+<h3 id="Cloudfront缓存了重定向"><a href="#Cloudfront缓存了重定向" class="headerlink" title="Cloudfront缓存了重定向"></a>Cloudfront缓存了重定向</h3><p>如果Cloudfront缓存了重定向，Stackoverflow上提供了一种<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/42308291/resize-images-on-the-fly-in-cloudfront-and-get-them-in-the-same-url-instantly-a">处理方案</a>：<br>在”Cloudfront分配”-“行为”中按照缩略图格式创建行为，将该行为的默认TTL设置为0，并且将该行为优先级设置为0：<br><img src="https://f004.backblazeb2.com/file/i-static/19/12/191218-cloudfront-behavior.png" alt="191218-cloudfront-bhavior"><br>在上传缩略图时设置缓存时间：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable constant_">S3</span>.<span class="title function_">putObject</span>(&#123;</span><br><span class="line">  <span class="title class_">Body</span>: buffer,</span><br><span class="line">  <span class="title class_">Bucket</span>: bucket,</span><br><span class="line">  <span class="title class_">ContentType</span>: <span class="string">&#x27;image/&#x27;</span> + requiredFormat,</span><br><span class="line">  <span class="title class_">CacheControl</span>: <span class="string">&#x27;max-age=2592000&#x27;</span>, <span class="comment">// 设置cloudfront缓存时间</span></span><br><span class="line">  <span class="title class_">Key</span>: key,</span><br><span class="line">  <span class="title class_">StorageClass</span>: <span class="string">&#x27;STANDARD&#x27;</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="APIGateway实现302重定向"><a href="#APIGateway实现302重定向" class="headerlink" title="APIGateway实现302重定向"></a>APIGateway实现302重定向</h3><p>在APIGateway的响应中添加状态码为302，并设置请求头<code>Location</code>，映射值设置为需要跳转的URL，可以参考这篇博文：<a target="_blank" rel="noopener" href="https://kennbrodhagen.net/2016/04/02/how-to-return-302-using-api-gateway-lambda/">How to return a 302 with Location header using API Gateway and Lambda</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://amazonaws-china.com/cn/blogs/china/image-processing-service-based-on-s3/">基于S3的图片处理服务</a><br><a target="_blank" rel="noopener" href="https://amazonaws-china.com/cn/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/">Resize Images on the Fly with Amazon S3, AWS Lambda, and Amazon API Gateway</a><br><a target="_blank" rel="noopener" href="https://sketchboard.io/blog/serverless-image-resize-with-amazon-lambda">SERVERLESS IMAGE RESIZE WITH AMAZON LAMBDA FUNCTION</a><br><a target="_blank" rel="noopener" href="https://dev.to/adnanrahic/a-crash-course-on-serverless-with-aws---image-resize-on-the-fly-with-lambda-and-s3-4foo">A crash course on Serverless with AWS - Image resize on-the-fly with Lambda and S3</a><br><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/zh_cn/lambda/latest/dg/welcome.html">Lambda开发人员指南</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AWS/" rel="tag"># AWS</a>
+              <a href="/tags/Lambda/" rel="tag"># Lambda</a>
+              <a href="/tags/Thumbnail/" rel="tag"># Thumbnail</a>
+              <a href="/tags/S3/" rel="tag"># S3</a>
+              <a href="/tags/APIGateway/" rel="tag"># APIGateway</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/10/jmx-monitoring-jvm/" rel="prev" title="JMX简单使用">
+                  <i class="fa fa-angle-left"></i> JMX简单使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/resizing-image-with-cloudfront-and-lambdaedge/" rel="next" title="使用Amazon Cloudfront+Lambda@Edge生成缩略图">
+                  使用Amazon Cloudfront+Lambda@Edge生成缩略图 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

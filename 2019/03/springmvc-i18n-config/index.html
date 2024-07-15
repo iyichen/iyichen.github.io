@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文主要介绍springMVC中国际化的相关配置 MessageSource示例：12345678@Beanpublic ReloadableResourceBundleMessageSource messageSource() &#123;    ReloadableResourceBundleMessageSource messageSource &#x3D; new ReloadableResourc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习SpringMVC国际化(二)">
+<meta property="og:url" content="https://iyichen.xyz/2019/03/springmvc-i18n-config/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="本文主要介绍springMVC中国际化的相关配置 MessageSource示例：12345678@Beanpublic ReloadableResourceBundleMessageSource messageSource() &#123;    ReloadableResourceBundleMessageSource messageSource &#x3D; new ReloadableResourc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-03-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:38:02.447Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="SpringMVC">
+<meta property="article:tag" content="I18N">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2019/03/springmvc-i18n-config/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2019/03/springmvc-i18n-config/","path":"2019/03/springmvc-i18n-config/","title":"学习SpringMVC国际化(二)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>学习SpringMVC国际化(二) | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MessageSource"><span class="nav-number">1.</span> <span class="nav-text">MessageSource</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">示例：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84"><span class="nav-number">1.3.1.</span> <span class="nav-text">设置资源文件路径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%BC%96%E7%A0%81"><span class="nav-number">1.3.2.</span> <span class="nav-text">设置编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E6%98%AF%E5%90%A6%E4%BD%BF%E7%94%A8%E7%B3%BB%E7%BB%9FLocale"><span class="nav-number">1.3.3.</span> <span class="nav-text">设置默认是否使用系统Locale</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.3.4.</span> <span class="nav-text">其他相关设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%9B%BD%E9%99%85%E5%8C%96%E6%96%87%E6%9C%AC"><span class="nav-number">1.3.5.</span> <span class="nav-text">获取国际化文本</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LocaleResolver"><span class="nav-number">2.</span> <span class="nav-text">LocaleResolver</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95-1"><span class="nav-number">2.1.</span> <span class="nav-text">常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#setDefaultLocale-Locale-locale"><span class="nav-number">2.1.1.</span> <span class="nav-text">setDefaultLocale(Locale locale)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">实现类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FixedLocaleResolver"><span class="nav-number">2.2.1.</span> <span class="nav-text">FixedLocaleResolver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AcceptHeaderLocaleResolver"><span class="nav-number">2.2.2.</span> <span class="nav-text">AcceptHeaderLocaleResolver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CookieLocaleResolver"><span class="nav-number">2.2.3.</span> <span class="nav-text">CookieLocaleResolver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SessionLocaleResolver"><span class="nav-number">2.2.4.</span> <span class="nav-text">SessionLocaleResolver</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LocaleChangeInterceptor"><span class="nav-number">3.</span> <span class="nav-text">LocaleChangeInterceptor</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/03/springmvc-i18n-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="学习SpringMVC国际化(二) | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          学习SpringMVC国际化(二)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-08 00:00:00" itemprop="dateCreated datePublished" datetime="2019-03-08T00:00:00+08:00">2019-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Learning/" itemprop="url" rel="index"><span itemprop="name">Learning</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><em><strong>本文主要介绍springMVC中国际化的相关配置</strong></em></p>
+<h2 id="MessageSource"><a href="#MessageSource" class="headerlink" title="MessageSource"></a>MessageSource</h2><h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> ReloadableResourceBundleMessageSource <span class="title function_">messageSource</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">ReloadableResourceBundleMessageSource</span> <span class="variable">messageSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReloadableResourceBundleMessageSource</span>();</span><br><span class="line">    messageSource.setBasenames(<span class="string">&quot;classpath:i18n/server&quot;</span>);</span><br><span class="line">    messageSource.setDefaultEncoding(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">    messageSource.setFallbackToSystemLocale(<span class="literal">false</span>);</span><br><span class="line">    <span class="keyword">return</span> messageSource;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>SpringBean名称必须是messageSource</strong></p>
+<span id="more"></span>
+
+<p>当<code>ApplicationContext</code>被加载时，会寻找bean名称为<em>messageSource</em>的类，如果没有找到，将会寻找bean父类中相同名称的类，如果还没有找到，将会实例化一个空的<code>DelegatingMessageSource</code>作为使用。</p>
+<blockquote>
+<p>When an ApplicationContext is loaded, it automatically searches for a MessageSource bean defined in the context. The bean must have the name messageSource. If such a bean is found, all calls to the preceding methods are delegated to the message source. If no message source is found, the ApplicationContext attempts to find a parent containing a bean with the same name. If it does, it uses that bean as the MessageSource. If the ApplicationContext cannot find any source for messages, an empty DelegatingMessageSource is instantiated in order to be able to accept calls to the methods defined above.</p>
+</blockquote>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>MessageSource</code>是Spring中提供国际化的接口，提供了3个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">MessageSource</span> &#123;</span><br><span class="line"></span><br><span class="line">    String <span class="title function_">getMessage</span><span class="params">(String code, Object[] args, String defaultMessage, Locale locale)</span>;</span><br><span class="line"></span><br><span class="line">    String <span class="title function_">getMessage</span><span class="params">(String code, Object[] args, Locale locale)</span> <span class="keyword">throws</span> NoSuchMessageException;</span><br><span class="line"></span><br><span class="line">    String <span class="title function_">getMessage</span><span class="params">(MessageSourceResolvable resolvable, Locale locale)</span> <span class="keyword">throws</span> NoSuchMessageException;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实去看这个接口相关的实现类时，会发现底层都是调用了JDK中<code>MessageFormat</code>类，只是Spring做了封装，并且提供了更多的功能。</p>
+<p>Spring提供了两种<code>MessageSource</code>的实现：<code>StaticMessageSource</code>和<code>ResourceBundleMessageSource</code>。其中<code>StaticMessageSource</code>很少使用，<code>ResourceBundleMessageSource</code>底层使用的是JDK中<code>ResourceBundle</code>类，所以<strong>语言资源文件命名规范以及加载规则都和<code>ResourceBundles</code>相同。</strong></p>
+<p>Spring还提供了另外一个更加灵活的类：<code>ReloadableResourceBundleMessageSource</code>，<br>它允许在Spring资源中任何位置加载资源文件，同时支持热加载(修改配置文件之后不用重启服务)。</p>
+<h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><p>以<code>ReloadableResourceBundleMessageSource</code>为例：</p>
+<h4 id="设置资源文件路径"><a href="#设置资源文件路径" class="headerlink" title="设置资源文件路径"></a>设置资源文件路径</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">messageSource.setBasenames(<span class="string">&quot;classpath:i18n/server&quot;</span>);</span><br><span class="line">messageSource.setBasename(<span class="string">&quot;classpath:i18n/server&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>一般使用第一个方法，可以加载不同basename的资源文件</p>
+<h4 id="设置编码"><a href="#设置编码" class="headerlink" title="设置编码"></a>设置编码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">messageSource.setDefaultEncoding(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>默认编码为ISO-8859-1</p>
+<h4 id="设置默认是否使用系统Locale"><a href="#设置默认是否使用系统Locale" class="headerlink" title="设置默认是否使用系统Locale"></a>设置默认是否使用系统Locale</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">messageSource.setFallbackToSystemLocale(<span class="literal">false</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>默认为true。如果设置为true，并且找不到对应locale的语言文件，将会使用系统locale的语言文件。例如有语言文件<code>test_en.properties</code>，<code>test_zh.properties</code>，<code>test.properties</code>，并且当前系统Locale为<code>Locale.China</code>，此时访问的locale为<code>Locale.FRANCE</code>，如果设置为true，将会使用<code>test_zh.properties</code>，如果设置为<code>false</code>，将会使用<code>test.properties</code></p>
+<h4 id="其他相关设置"><a href="#其他相关设置" class="headerlink" title="其他相关设置"></a>其他相关设置</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认为false，当不需要占位符替换时，不会调用MessageFormat方法</span></span><br><span class="line">messageSource.setAlwaysUseMessageFormat(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 默认为false，如果参数code在语言资源中不存在，会抛出异常；如果设置为true，会直接展示code</span></span><br><span class="line">messageSource.setUseCodeAsDefaultMessage(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置缓存时间，单位为秒，默认为-1永久缓存。注意生产环境不要设置为0，设置0表示每次调用都会检查文件的最后更新时间</span></span><br><span class="line">messageSource.setCacheSeconds(-<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取国际化文本"><a href="#获取国际化文本" class="headerlink" title="获取国际化文本"></a>获取国际化文本</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getMessage(String code, Object[] args, Locale locale);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面方法基本可以理解为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 调用ResourceBundle.getBundle(String baseName, Locale locale)获取资源文件</span><br><span class="line">2. 调用ResourceBundle.getString(String code)获取国际化文本内容</span><br><span class="line">3. 如果需要占位符替换，调用MessageFormat.format(String pattern, Object ... arguments)</span><br></pre></td></tr></table></figure>
+
+<h2 id="LocaleResolver"><a href="#LocaleResolver" class="headerlink" title="LocaleResolver"></a>LocaleResolver</h2><p>LocaleResolver是SpringMVC中设置存储Locale的类</p>
+<h3 id="常用方法-1"><a href="#常用方法-1" class="headerlink" title="常用方法"></a>常用方法</h3><h4 id="setDefaultLocale-Locale-locale"><a href="#setDefaultLocale-Locale-locale" class="headerlink" title="setDefaultLocale(Locale locale)"></a>setDefaultLocale(Locale locale)</h4><p>设置默认Locale。当无法取得请求中的Locale信息时，会使用此处设置的Locale</p>
+<h3 id="实现类"><a href="#实现类" class="headerlink" title="实现类"></a>实现类</h3><h4 id="FixedLocaleResolver"><a href="#FixedLocaleResolver" class="headerlink" title="FixedLocaleResolver"></a>FixedLocaleResolver</h4><p>默认使用JVM的Locale，不支持<code>setLocaleContext()</code>方法，用的不多</p>
+<h4 id="AcceptHeaderLocaleResolver"><a href="#AcceptHeaderLocaleResolver" class="headerlink" title="AcceptHeaderLocaleResolver"></a>AcceptHeaderLocaleResolver</h4><p>从Http请求头中的<code>accept-language</code>检查Locale信息，但是不支持检查时区信息</p>
+<h4 id="CookieLocaleResolver"><a href="#CookieLocaleResolver" class="headerlink" title="CookieLocaleResolver"></a>CookieLocaleResolver</h4><p>从Cookie从检查是否有Locale信息或者时区信息，支持设置Cookie的名称和过期时间等</p>
+<h4 id="SessionLocaleResolver"><a href="#SessionLocaleResolver" class="headerlink" title="SessionLocaleResolver"></a>SessionLocaleResolver</h4><p>从Session从检查是否有Locale信息或者时区信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> SessionLocaleResolver <span class="title function_">localeResolver</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">SessionLocaleResolver</span> <span class="variable">localeResolver</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SessionLocaleResolver</span>();</span><br><span class="line">    localeResolver.setDefaultLocale(Locale.ENGLISH); <span class="comment">// 设置默认Locale为英语地区，当无法从请求中获取到Locale时使用</span></span><br><span class="line">    <span class="keyword">return</span> localeResolver;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="LocaleChangeInterceptor"><a href="#LocaleChangeInterceptor" class="headerlink" title="LocaleChangeInterceptor"></a>LocaleChangeInterceptor</h2><p>SpringMVC提供的拦截器，用于处理请求中的Locale信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 拦截器设置</span></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> LocaleChangeInterceptor <span class="title function_">localeChangeInterceptor</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">LocaleChangeInterceptor</span> <span class="variable">localeChangeInterceptor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">LocaleChangeInterceptor</span>();</span><br><span class="line">    <span class="comment">// 设置请求参数名为`lang`，如请求参数`lang=en`</span></span><br><span class="line">    localeChangeInterceptor.setParamName(<span class="string">&quot;lang&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 是否忽略不合法的Locale，如请求参数`lang=@12`，如设置为false，将会抛出异常</span></span><br><span class="line">    localeChangeInterceptor.setIgnoreInvalidLocale(<span class="literal">true</span>);</span><br><span class="line">    <span class="keyword">return</span> localeChangeInterceptor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 配置拦截器拦截所有请求</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> &#123;</span><br><span class="line">    registry.addInterceptor(localeChangeInterceptor());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+              <a href="/tags/I18N/" rel="tag"># I18N</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/03/java-locale/" rel="prev" title="Java国际化简单介绍">
+                  <i class="fa fa-angle-left"></i> Java国际化简单介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/consistent-hashing-java/" rel="next" title="一致性哈希(Consistent Hashing)">
+                  一致性哈希(Consistent Hashing) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

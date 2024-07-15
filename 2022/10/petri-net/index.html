@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri Nets">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Petri Net入门">
+<meta property="og:url" content="https://iyichen.xyz/2022/10/petri-net/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。 看懂Petri Nets">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-4.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-5.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-6.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-19.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-20.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png">
+<meta property="article:published_time" content="2022-10-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-14T13:50:40.758Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Design">
+<meta property="article:tag" content="Petrinet">
+<meta property="article:tag" content="StateMachine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2022/10/petri-net/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2022/10/petri-net/","path":"2022/10/petri-net/","title":"Petri Net入门"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Petri Net入门 | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E6%87%82Petri-Nets"><span class="nav-number">1.</span> <span class="nav-text">看懂Petri Nets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%A6%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">另一个例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%BB%E4%B8%80%E4%B8%AA%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">画一个生产者消费者模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/10/petri-net/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Petri Net入门 | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Petri Net入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-10-10 00:00:00" itemprop="dateCreated datePublished" datetime="2022-10-10T00:00:00+08:00">2022-10-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Learning/" itemprop="url" rel="index"><span itemprop="name">Learning</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>757</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>前段时间有朋友问了关于Petri Nets相关的程序问题，就花了点时间学习了下，因此本文是Petri Nets自学入门过程中的总结。因为当时只关注程序设计上的问题，所以是比较基础的内容，不会涉及到数学和程序上的内容。</p>
+<h2 id="看懂Petri-Nets"><a href="#看懂Petri-Nets" class="headerlink" title="看懂Petri Nets"></a>看懂Petri Nets</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-2.png" alt="图1"></p>
+<span id="more"></span>
+
+<p>先解释下这个图中的元素：</p>
+<ul>
+<li>Place(P)：蓝色的圆</li>
+<li>Transition(T)：黄色的方形</li>
+<li>Arc(A)：红色的连线</li>
+<li>Weight(W)：Arc上的数字，<strong>如果没有写，则为1</strong></li>
+<li>Token：紫色的圆</li>
+</ul>
+<p>其中<code>Arc</code>只能连接<code>Place</code>和<code>Transition</code>，也就是下面这种情况是<strong>不允许</strong>的：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-3.png"></p>
+<p><code>Token</code>只存在<code>Place</code>中，理论上来说一个<code>Place</code>中可以存储的<code>Token</code>是没有上限的（当然也可以根据需求做限制）。</p>
+<p>当<code>Transtion</code>的入口所有<code>Place</code>都满足条件（即<code>Place</code>种的<code>Token</code>数量不少于<code>Weight</code>），以及出口的所有<code>Place</code>都满足条件（即<code>Place</code>种的<code>Token</code>数量加上<code>Weight</code>的数量不能超过<code>Place</code>本身允许的<code>Token</code>数量上限）,那么称这种情况为<code>Fireable</code>。当满足<code>Fireable</code>时，就可以进行<code>Fire</code>，<code>Fire</code>就是从<code>Transition</code>的入口所有<code>Place</code>移除对应<code>Weight</code>数量的<code>Token</code>，同时在<code>Transition</code>的出口<code>Place</code>中添加对应<code>Weight</code>数量的<code>Token</code>。</p>
+<p>以例图来说：<br><code>T1</code>的<code>Fire</code>条件是<code>P1</code>中至少有1个<code>Token</code>，因此<code>Fire</code>之后：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-4.png"></p>
+<p><code>T2</code>的<code>Fire</code>的条件是<code>P2</code>中至少有2个<code>Token</code>，但现在<code>P2</code>中只有1个，因此不能<code>Fire</code>。而<code>T1</code>的<code>Fire</code>条件仍然满足，因此<code>T1</code>执行<code>Fire</code>之后：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-5.png"></p>
+<p>此时<code>T2</code>的<code>Fire</code>条件已经满足，因此<code>T2</code>执行<code>Fire</code>之后，会生产2个<code>Token</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-6.png"></p>
+<h2 id="另一个例子"><a href="#另一个例子" class="headerlink" title="另一个例子"></a>另一个例子</h2><p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-9.png"></p>
+<p>可以看到<code>T1</code>的<code>Fire</code>条件是满足的，<code>Fire</code>后<code>T1</code>会生产1个<code>Token</code>到<code>P2</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-10.png"></p>
+<p>此时<code>P2</code>有2种选择，因为<code>T2</code>和<code>T3</code>都是<code>Fireable</code>（当有多个<code>Transition</code>都是可以<code>Fire</code>时，可以使用不同的策略），假设选择<code>T3</code>，那么<code>T3</code>会生产1个<code>Token</code>给<code>P1</code>，同时生产1个<code>Token</code>给<code>P3</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-11.png"></p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>当<code>Petri Net</code>中没有可以<code>Fire</code>的<code>Transition</code>时，这时就进入了死锁，因此设计<code>Petri Net</code>的时候需要尽量避免这种情况，比如这种情况：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-19.png"></p>
+<p>最终会变成没有任何一个<code>Transition</code>可以进行<code>Fire</code>：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-20.png"></p>
+<h2 id="画一个生产者消费者模型"><a href="#画一个生产者消费者模型" class="headerlink" title="画一个生产者消费者模型"></a>画一个生产者消费者模型</h2><p>最简单的一个生产者消费者模型：</p>
+<ul>
+<li><p>生产的条件：允许生产</p>
+</li>
+<li><p>消费的条件：允许消费并且生产完成</p>
+</li>
+</ul>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-16.png"></p>
+<p>同时<code>T(生产行为)</code>的下一步就是<code>P(产品生产完成)</code>，而<code>T(准备消费产品)</code>的下一步就是<code>P(消费产品)</code>，而消费产品后就可以重新消费，同时可以重新开始生产：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-17.png"></p>
+<p>最后就是初始的触发条件了，需要能够让状态动起来，可以看到需要在<code>P(可以生产)</code> 和 <code>P(可以消费)</code>各自放入一个<code>Token</code>：：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/10/221010-18.png"></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>一个基于<code>java</code>的<code>Petri Net</code>实现：<a target="_blank" rel="noopener" href="https://github.com/iyichen/petri-net">https://github.com/iyichen/petri-net</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Design/" rel="tag"># Design</a>
+              <a href="/tags/Petrinet/" rel="tag"># Petrinet</a>
+              <a href="/tags/StateMachine/" rel="tag"># StateMachine</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/misc-note1/" rel="prev" title="非常规爬虫姿势">
+                  <i class="fa fa-angle-left"></i> 非常规爬虫姿势
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/07/mac-parse-chrome-cookie/" rel="next" title="MacOS下获取Chrome保存的Cookie">
+                  MacOS下获取Chrome保存的Cookie <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

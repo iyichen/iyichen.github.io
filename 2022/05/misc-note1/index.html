@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="最近试了下如何通过模拟浏览器请求的方式获取网页源代码。 SeleniumSelenium 是一个用于Web应用程序测试的工具，通过调用浏览器模拟用户请求，最终获取页面源代码。好处在于可以使用浏览器 headless 模式，在无桌面环境的 linux 系统下运行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非常规爬虫姿势">
+<meta property="og:url" content="https://iyichen.xyz/2022/05/misc-note1/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="最近试了下如何通过模拟浏览器请求的方式获取网页源代码。 SeleniumSelenium 是一个用于Web应用程序测试的工具，通过调用浏览器模拟用户请求，最终获取页面源代码。好处在于可以使用浏览器 headless 模式，在无桌面环境的 linux 系统下运行。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/05/220515-chrome.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/05/220515-chrome-disable-static.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/05/220515-webview.png">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/22/05/220515-webview-disable-static.png">
+<meta property="article:published_time" content="2022-05-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:36:43.669Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Chrome">
+<meta property="article:tag" content="Webview">
+<meta property="article:tag" content="JavaFx">
+<meta property="article:tag" content="Crawler">
+<meta property="article:tag" content="Selenium">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/22/05/220515-chrome.png">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2022/05/misc-note1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2022/05/misc-note1/","path":"2022/05/misc-note1/","title":"非常规爬虫姿势"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>非常规爬虫姿势 | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Selenium"><span class="nav-number">1.</span> <span class="nav-text">Selenium</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS%E4%B8%8B%E4%BD%BF%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">CentOS下使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%BD%91%E9%A1%B5%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">获取网页源代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%AE%BF%E9%97%AE"><span class="nav-number">1.3.</span> <span class="nav-text">优化访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Headless"><span class="nav-number">1.4.</span> <span class="nav-text">Headless</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Webview"><span class="nav-number">2.</span> <span class="nav-text">Webview</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%BD%91%E9%A1%B5%E6%BA%90%E4%BB%A3%E7%A0%81-1"><span class="nav-number">2.1.</span> <span class="nav-text">获取网页源代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEUA"><span class="nav-number">2.2.</span> <span class="nav-text">设置UA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%AE%BF%E9%97%AE-1"><span class="nav-number">2.3.</span> <span class="nav-text">优化访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%8A%93%E5%8F%96"><span class="nav-number">2.4.</span> <span class="nav-text">自动抓取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2022/05/misc-note1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="非常规爬虫姿势 | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          非常规爬虫姿势
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-05-15 00:00:00" itemprop="dateCreated datePublished" datetime="2022-05-15T00:00:00+08:00">2022-05-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Memo/" itemprop="url" rel="index"><span itemprop="name">Memo</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>最近试了下如何通过模拟浏览器请求的方式获取网页源代码。</p>
+<h2 id="Selenium"><a href="#Selenium" class="headerlink" title="Selenium"></a>Selenium</h2><p><code>Selenium</code> 是一个用于Web应用程序测试的工具，通过调用浏览器模拟用户请求，最终获取页面源代码。好处在于可以使用浏览器 <code>headless</code> 模式，在无桌面环境的 <code>linux</code> 系统下运行。</p>
+<span id="more"></span>
+
+<p>以 <code>Chrome</code> 为例，安装 <code>Chrome</code> 后，我们需要根据浏览器版本获取到对应的浏览器驱动。</p>
+<h3 id="CentOS下使用"><a href="#CentOS下使用" class="headerlink" title="CentOS下使用"></a>CentOS下使用</h3><p><code>CentOS</code> 下通过 <code>yum</code> 命令安装 <code>Chrome</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install google-chrome-stable_current_x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>该命令安装的 <code>chrome</code> 是最新版本，历史版本可以查看：<a target="_blank" rel="noopener" href="http://orion.lcg.ufrj.br/RPMS/myrpms/google/">http://orion.lcg.ufrj.br/RPMS/myrpms/google/</a></p>
+<p>使用命令 <code>google-chrome --version</code> 查看当前安装的版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># google-chrome --version</span></span><br><span class="line">Google Chrome 101.0.4951.54 </span><br></pre></td></tr></table></figure>
+
+<p>在官网上查找该版本对应的驱动：<a target="_blank" rel="noopener" href="http://chromedriver.storage.googleapis.com/index.html">http://chromedriver.storage.googleapis.com/index.html</a> ，下载并解压。</p>
+<h3 id="获取网页源代码"><a href="#获取网页源代码" class="headerlink" title="获取网页源代码"></a>获取网页源代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.openqa.selenium.chrome.ChromeDriver;</span><br><span class="line"><span class="keyword">import</span> org.openqa.selenium.chrome.ChromeOptions;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;https://www.163.com&quot;</span>;</span><br><span class="line"></span><br><span class="line">      	<span class="comment">// 设置本地chrome驱动路径</span></span><br><span class="line">        System.setProperty(<span class="string">&quot;webdriver.chrome.driver&quot;</span>, <span class="string">&quot;/opt/chrome/chromedriver&quot;</span>);</span><br><span class="line">      	<span class="comment">// 设置chrome选项</span></span><br><span class="line">        <span class="type">ChromeOptions</span> <span class="variable">options</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChromeOptions</span>();</span><br><span class="line">        options.addArguments(<span class="string">&quot;--disable-gpu&quot;</span>);</span><br><span class="line">        options.addArguments(<span class="string">&quot;--no-sandbox&quot;</span>);</span><br><span class="line">        options.addArguments(<span class="string">&quot;--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">ChromeDriver</span> <span class="variable">driver</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChromeDriver</span>(options);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            driver.get(url);</span><br><span class="line">            <span class="comment">// 获取网页源代码</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">page</span> <span class="operator">=</span> driver.getPageSource();</span><br><span class="line">            System.out.println(page);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          	<span class="comment">// 请求结束后关闭并退出浏览器</span></span><br><span class="line">            driver.close();</span><br><span class="line">            driver.quit();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行效果：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/05/220515-chrome.png"></p>
+<h3 id="优化访问"><a href="#优化访问" class="headerlink" title="优化访问"></a>优化访问</h3><p>通过设置浏览器选项禁用图片和 js：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置页面加载策略</span></span><br><span class="line">options.setPageLoadStrategy(PageLoadStrategy.EAGER);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 禁用图片</span></span><br><span class="line">options.addArguments(<span class="string">&quot;--blink-settings=imagesEnabled=false&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 禁用js</span></span><br><span class="line">Map&lt;String, Object&gt; prefs = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">prefs.put(<span class="string">&quot;profile.managed_default_content_settings.javascript&quot;</span>, <span class="number">2</span>);</span><br><span class="line">options.setExperimentalOption(<span class="string">&quot;prefs&quot;</span>, prefs);</span><br></pre></td></tr></table></figure>
+
+<p>运行效果：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/05/220515-chrome-disable-static.png"></p>
+<h3 id="Headless"><a href="#Headless" class="headerlink" title="Headless"></a>Headless</h3><p>在无桌面系统的服务器上，需要启用 <code>headless</code> 模式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options.addArguments(<span class="string">&quot;--headless&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，在 <code>headless</code> 模式下，<strong>由于安全保护机制，很多的设置无法生效</strong>。</p>
+<h2 id="Webview"><a href="#Webview" class="headerlink" title="Webview"></a>Webview</h2><p><code>javaFx</code> 中已经拥有 <code>webview</code> 组件，因此可以通过 <code>webview</code> 模拟浏览器请求，等待页面加载完成后获取网页的源代码。</p>
+<p>一个简单的示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javafx.application.Application;</span><br><span class="line"><span class="keyword">import</span> javafx.scene.Scene;</span><br><span class="line"><span class="keyword">import</span> javafx.scene.layout.VBox;</span><br><span class="line"><span class="keyword">import</span> javafx.scene.web.WebView;</span><br><span class="line"><span class="keyword">import</span> javafx.stage.Stage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebviewTest</span> <span class="keyword">extends</span> <span class="title class_">Application</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">WebView</span> <span class="variable">webView</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">WebView</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        launch(args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">start</span><span class="params">(Stage primaryStage)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;https://163.com&quot;</span>;</span><br><span class="line">        webView.getEngine().load(url);</span><br><span class="line"></span><br><span class="line">        <span class="type">VBox</span> <span class="variable">vBox</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VBox</span>(webView);</span><br><span class="line">        <span class="type">Scene</span> <span class="variable">scene</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scene</span>(vBox, <span class="number">1080</span>, <span class="number">600</span>);</span><br><span class="line"></span><br><span class="line">        primaryStage.setScene(scene);</span><br><span class="line">        primaryStage.show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行效果：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/05/220515-webview.png"></p>
+<h3 id="获取网页源代码-1"><a href="#获取网页源代码-1" class="headerlink" title="获取网页源代码"></a>获取网页源代码</h3><p>通过监听网页加载状态判断页面是否已经加载完成，加载完成后执行 <code>javascript</code> 脚本获取源代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加加载状态监听器</span></span><br><span class="line">webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -&gt; &#123;</span><br><span class="line">    <span class="comment">// 判断是否完成</span></span><br><span class="line">    <span class="keyword">if</span> (newValue == Worker.State.SUCCEEDED) &#123;</span><br><span class="line">        <span class="comment">// 执行js获取网页源代码</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">html</span> <span class="operator">=</span> (String) webView.getEngine().executeScript(<span class="string">&quot;document.documentElement.outerHTML&quot;</span>);</span><br><span class="line">        System.out.println(html);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置UA"><a href="#设置UA" class="headerlink" title="设置UA"></a>设置UA</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webView.getEngine().setUserAgent(<span class="string">&quot;UA&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化访问-1"><a href="#优化访问-1" class="headerlink" title="优化访问"></a>优化访问</h3><p>对于有些网页而言，静态资源加载（如图片等）是比较耗时的，而如果我们只想获取网页的源代码，那么类似 <code>图片</code>，<code>css</code>，<code>js</code> 等静态资源并不是必须的，在这种情况下，可以过滤掉部分的远程请求，加快页面的响应时间。</p>
+<p>因为 <code>Webview</code> 并没有提供这样的入口，因此我们可以通过设置全局的 <code>URLStreamHandlerFactory</code> 实现过滤远程请求：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">initConnection</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 设置请求处理方式</span></span><br><span class="line">    URL.setURLStreamHandlerFactory(<span class="keyword">new</span> <span class="title class_">URLStreamHandlerFactory</span>() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> URLStreamHandler <span class="title function_">createURLStreamHandler</span><span class="params">(String protocol)</span> &#123;</span><br><span class="line">            <span class="comment">// 一般远程请求常见的就是 http 和 https 协议，因此此处只处理这两种协议</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="string">&quot;http&quot;</span>.equals(protocol)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">sun</span>.net.www.protocol.http.Handler() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="keyword">protected</span> URLConnection <span class="title function_">openConnection</span><span class="params">(URL url, Proxy proxy)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                      	<span class="comment">// 通过自定义的ignore方法，判断目标url是否是必须加载的</span></span><br><span class="line">                        <span class="keyword">if</span> (ignore(url)) &#123;</span><br><span class="line">                            <span class="comment">// 如果是可以忽略的url，那么加载本地文件替代（可以使用本地任意文件</span></span><br><span class="line">                            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;file:local.file&quot;</span>).openConnection();</span><br><span class="line">                        &#125; </span><br><span class="line">                      	<span class="comment">// 如果是必须的url，正常请求流程</span></span><br><span class="line">                        <span class="keyword">return</span> <span class="built_in">super</span>.openConnection(url, proxy);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;https&quot;</span>.equals(protocol)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">sun</span>.net.www.protocol.https.Handler() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="keyword">protected</span> URLConnection <span class="title function_">openConnection</span><span class="params">(URL url, Proxy proxy)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                        <span class="keyword">if</span> (ignore(url)) &#123;</span><br><span class="line">                            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;file:local.file&quot;</span>).openConnection();</span><br><span class="line">                        &#125; </span><br><span class="line">                        <span class="keyword">return</span> <span class="built_in">super</span>.openConnection(url, proxy);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行效果：</p>
+<p><img src="https://f004.backblazeb2.com/file/i-static/22/05/220515-webview-disable-static.png"></p>
+<h3 id="自动抓取"><a href="#自动抓取" class="headerlink" title="自动抓取"></a>自动抓取</h3><p>在程序启动后，新启线程调用 <code>webView.getEngine().load(url)</code> 方法，并最终提交到 <code>javaFx</code> 线程中执行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Platform.runLater(() -&gt; webView.getEngine().load(url));</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，需要等待上一个页面加载完成后才能继续请求下一个页面。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="http://orion.lcg.ufrj.br/RPMS/myrpms/google/">CentOS下Chrome历史版本</a></p>
+<p><a target="_blank" rel="noopener" href="http://chromedriver.storage.googleapis.com/index.html">Chrome驱动</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Chrome/" rel="tag"># Chrome</a>
+              <a href="/tags/Webview/" rel="tag"># Webview</a>
+              <a href="/tags/JavaFx/" rel="tag"># JavaFx</a>
+              <a href="/tags/Crawler/" rel="tag"># Crawler</a>
+              <a href="/tags/Selenium/" rel="tag"># Selenium</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/04/desensitization-data-design/" rel="prev" title="聊聊用户敏感数据保存">
+                  <i class="fa fa-angle-left"></i> 聊聊用户敏感数据保存
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/10/petri-net/" rel="next" title="Petri Net入门">
+                  Petri Net入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

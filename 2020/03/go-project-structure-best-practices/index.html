@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="关于Go项目的结构设计，推荐先观看 Kat Zien 关于Go项目结构设计的演讲：https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v&#x3D;oL6JBUk6tj0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译] Go项目结构设计最佳实践">
+<meta property="og:url" content="https://iyichen.xyz/2020/03/go-project-structure-best-practices/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="关于Go项目的结构设计，推荐先观看 Kat Zien 关于Go项目结构设计的演讲：https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v&#x3D;oL6JBUk6tj0">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/20/03/200330-head-go-structure.jpg">
+<meta property="article:published_time" content="2020-03-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:37:22.406Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Design">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="Translation">
+<meta property="article:tag" content="Thinking">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/20/03/200330-head-go-structure.jpg">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2020/03/go-project-structure-best-practices/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2020/03/go-project-structure-best-practices/","path":"2020/03/go-project-structure-best-practices/","title":"[译] Go项目结构设计最佳实践"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译] Go项目结构设计最佳实践 | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E5%9E%8B%E5%BA%94%E7%94%A8-%E5%B9%B3%E9%9D%A2%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">小型应用 - 平面结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BE%8B%E5%AD%90"><span class="nav-number">1.1.</span> <span class="nav-text">应用例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E5%A4%A7%E5%9E%8B%E5%BA%94%E7%94%A8-%E6%A8%A1%E5%9D%97%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">中大型应用 - 模块化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BE%8B%E5%AD%90-1"><span class="nav-number">2.1.</span> <span class="nav-text">应用例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%90%E7%86%9F%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">成熟的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%86%E5%88%86%E9%A1%B9%E7%9B%AE"><span class="nav-number">4.</span> <span class="nav-text">拆分项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2020/03/go-project-structure-best-practices/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译] Go项目结构设计最佳实践 | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译] Go项目结构设计最佳实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-30 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-30T00:00:00+08:00">2020-03-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Thinking/" itemprop="url" rel="index"><span itemprop="name">Thinking</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>994</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://f004.backblazeb2.com/file/i-static/20/03/200330-head-go-structure.jpg" alt="jmx"></p>
+<p>关于Go项目的结构设计，推荐先观看 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=oL6JBUk6tj0">Kat Zien 关于Go项目结构设计的演讲：https://www.youtube.com/watch?v=oL6JBUk6tj0</a></p>
+<span id="more"></span>
+
+<p><strong>本文内容整理自 <a target="_blank" rel="noopener" href="https://tutorialedge.net/golang/go-project-structure-best-practices/">Elliot Forbes: Go Project Structure Best Practices</a></strong></p>
+<p><strong>以下为部分译文：</strong></p>
+<p>Go应用程序应该遵循的项目结构是一个有争议的主题，因为Go项目结构并没有统一规范。很多人认为应该遵循 <a target="_blank" rel="noopener" href="https://github.com/golang-standards/project-layout">golang-standards &#x2F; project-layout</a> 结构，但是随着Go Modules成为处理Go依赖关系的标准，这种结构开始面临挑战。按照传统结构，您会发现项目结构中的某些包并没有访问权限，如 <code>internal</code> 或 <code>pkg</code>，而一旦要处理起来也是非常的棘手。</p>
+<blockquote>
+<p>在构建应用程序时，没有一劳永逸的方法。随着应用程序的发展，项目结构也在不断发展。</p>
+</blockquote>
+<p>在本文中，我将介绍在构建Go应用程序时可以选择的项目结构。</p>
+<h2 id="小型应用-平面结构"><a href="#小型应用-平面结构" class="headerlink" title="小型应用 - 平面结构"></a>小型应用 - 平面结构</h2><p>这种项目结构清晰简单，不需要花费太多的时间去整理项目结构，同时作为开发人员，可以尽可能的专注于完成目标功能。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">application/</span><br><span class="line"> - main.go</span><br><span class="line"> - main_test.go</span><br><span class="line"> - utils.go</span><br><span class="line"> - utils_test.go</span><br><span class="line"> - ...</span><br></pre></td></tr></table></figure>
+
+<p>这种项目结构适用于以下应用：</p>
+<ul>
+<li><strong>微服务</strong> -  实现单一功能的应用程序</li>
+<li><strong>小型工具库</strong> - 用于完成少数任务的命令行工具或小型工具库</li>
+</ul>
+<h3 id="应用例子"><a href="#应用例子" class="headerlink" title="应用例子"></a>应用例子</h3><p>一些使用这种项目结构的例子：</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/tidwall/gjson">tidwall &#x2F; gjson</a></strong></li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/go-yaml/yaml">go-yaml &#x2F; yaml</a></strong></li>
+</ul>
+<h2 id="中大型应用-模块化"><a href="#中大型应用-模块化" class="headerlink" title="中大型应用 - 模块化"></a>中大型应用 - 模块化</h2><p>随着项目规模变大，复杂性增长，您很快就会发现它开始超出平面结构，这时就应该开始考虑模块化了。</p>
+<p>以网站的REST API为例，假设该REST API需要提供注册和登录功能，以及需要类似CRUD方式处理用户文章的功能。这时我们需要考虑将应用程序按照功能分组，并尽可能的把不同组件之间共享的核心逻辑放到项目的共享包中。</p>
+<p>此时项目结构可能会变成这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rest-api/</span><br><span class="line">- main.go</span><br><span class="line">- user/</span><br><span class="line">- - user.go</span><br><span class="line">- - login.go</span><br><span class="line">- - registration.go</span><br><span class="line">- articles/</span><br><span class="line">- - articles.go</span><br><span class="line">- utils/</span><br><span class="line">- - common_utils.go</span><br></pre></td></tr></table></figure>
+
+<h3 id="应用例子-1"><a href="#应用例子-1" class="headerlink" title="应用例子"></a>应用例子</h3><ul>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/google/go-cloud">google &#x2F; go-cloud</a></strong> - 这是采用此结构的项目中一个很好的例子。项目被分解为每个IAAS云提供商的程序包，并且每个程序包都包含与该特定云提供商有关的所有代码。</li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/hashicorp/consul">hashicorp &#x2F; consul</a></strong> - 这是使用模块化大型项目中另一个很好的例子。</li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/ipfs/go-ipfs">ipfs &#x2F; go-ipfs</a></strong> - 全局版本化的对等文件系统</li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/gohugoio/hugo">gohugoio &#x2F; hugo</a></strong> - 快速灵活的静态站点生成器</li>
+</ul>
+<h2 id="成熟的应用"><a href="#成熟的应用" class="headerlink" title="成熟的应用"></a>成熟的应用</h2><p>您一定会看到符合旧结构的项目，但这些项目是属于Go早期版本的产品。</p>
+<p>如 Hashicorp 的 Terraform 或 Google 自己的 Kubernetes 之类的大型应用程序往往会保留旧结构，因为这些项目是<code>$GOPATH</code>统治时代的产品，您会看到它们仍然具有<code>internal</code>和<code>pkg</code>文件夹，其中封装了项目的某些内部工作。</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/hashicorp/terraform/tree/master/terraform">hashicorp &#x2F; terraform</a></strong></li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes">Kubernetes &#x2F; kubernetes</a></strong></li>
+</ul>
+<p>这种结构项目运行得非常好，使开发人员能够为开发社区带来不可思议的价值，但我认为，随着Go Modules开始变得越来越流行，我们将会看到这些应用程序从传统的结构迁移到新的结构。</p>
+<h2 id="拆分项目"><a href="#拆分项目" class="headerlink" title="拆分项目"></a>拆分项目</h2><p>在特定的时间点后，将项目中的某些部分从原项目中拆分出来，创建新的项目独立维护，可能是非常有意义的。虽然可能导致管理项目需要使用额外的开销，但是这也意味着对想要贡献和帮助项目的新手来说更加友好。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这些是我日常工作中的开发经验，希望本文对您的开发工作有所帮助，并在您开始为下一个Go项目建模时提供一些想法！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Design/" rel="tag"># Design</a>
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/Translation/" rel="tag"># Translation</a>
+              <a href="/tags/Thinking/" rel="tag"># Thinking</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/go-in-action-note/" rel="prev" title="Go语言入门">
+                  <i class="fa fa-angle-left"></i> Go语言入门
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04/talk-about-aoi/" rel="next" title="聊聊游戏中的AOI">
+                  聊聊游戏中的AOI <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

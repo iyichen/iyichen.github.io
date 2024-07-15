@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="EnvironmentEnvironment表示应用当前所运行的环境。  Interface representing the environment in which the current application is running. Models two key aspects of the applicationenvironment: profiles and properties.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring中的Environment">
+<meta property="og:url" content="https://iyichen.xyz/2019/05/spring-environment/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="EnvironmentEnvironment表示应用当前所运行的环境。  Interface representing the environment in which the current application is running. Models two key aspects of the applicationenvironment: profiles and properties.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/05/190519-StandardEnvironment.png">
+<meta property="article:published_time" content="2019-05-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:38:24.054Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="SourceCode">
+<meta property="article:tag" content="Environment">
+<meta property="article:tag" content="Properties">
+<meta property="article:tag" content="Profiles">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/19/05/190519-StandardEnvironment.png">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2019/05/spring-environment/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2019/05/spring-environment/","path":"2019/05/spring-environment/","title":"Spring中的Environment"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring中的Environment | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Environment"><span class="nav-number">1.</span> <span class="nav-text">Environment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StandardEnvironment"><span class="nav-number">2.</span> <span class="nav-text">StandardEnvironment</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Environment-1"><span class="nav-number">2.1.</span> <span class="nav-text">Environment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConfigurableEnvironment"><span class="nav-number">2.2.</span> <span class="nav-text">ConfigurableEnvironment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AbstractEnvironment"><span class="nav-number">2.3.</span> <span class="nav-text">AbstractEnvironment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StandardEnvironment-1"><span class="nav-number">2.4.</span> <span class="nav-text">StandardEnvironment</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/05/spring-environment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring中的Environment | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring中的Environment
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-19 00:00:00" itemprop="dateCreated datePublished" datetime="2019-05-19T00:00:00+08:00">2019-05-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Learning/" itemprop="url" rel="index"><span itemprop="name">Learning</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><p><code>Environment</code>表示应用当前所运行的环境。</p>
+<blockquote>
+<p>Interface representing the environment in which the current application is running. Models two key aspects of the application<br>environment: <em>profiles</em> and <em>properties</em>. Methods related to property access are exposed via the <code>PropertyResolver</code> superinterface.</p>
+<p>A <em>profile</em> is a named, logical group of bean definitions to be registered with the container only if the given profile is <em>active</em>. Beans may be assigned to a profile whether defined in XML or via annotations; see the spring-beans 3.1 schema or the <code>@Profile</code> annotation for syntax details. The role of the <code>Environment</code> object with relation to profiles is in determining which profiles (if any) are currently active, and which profiles (if any) should be active by default.</p>
+<p><em>Properties</em> play an important role in almost all applications, and may originate from a variety of sources: properties files, JVM system properties, system environment variables, JNDI, servlet context parameters, ad-hoc Properties objects, Maps, and so on. The role of the environment object with relation to properties is to provide the user with a convenient service interface for configuring property sources and resolving properties from them</p>
+</blockquote>
+<span id="more"></span>
+
+<p>从<code>Environment</code>注释上可以看到，<code>Environment</code>主要负责处理两个方面：<code>profiles</code>和<code>properties</code></p>
+<p><code>profiles</code>类似Maven中的<code>profiles</code>，Spring允许配置多个<code>profile</code>，但只加载激活的<code>profile</code>，通过<code>profiles</code>配置，可以实现不同环境使用不同的配置(例如不同环境使用不同的数据库配置)</p>
+<p><code>properties</code>在整个应用中都会用到，Spring会从各种来源加载：properties文件(例如数据库配置文件)，JVM系统配置，系统环境变量，Servlet上下文参数等。通过<code>properties</code>，可以更加便捷的获取到配置信息</p>
+<h2 id="StandardEnvironment"><a href="#StandardEnvironment" class="headerlink" title="StandardEnvironment"></a>StandardEnvironment</h2><p><img src="https://f004.backblazeb2.com/file/i-static/19/05/190519-StandardEnvironment.png" alt="StandardEnvironment"></p>
+<h3 id="Environment-1"><a href="#Environment-1" class="headerlink" title="Environment"></a>Environment</h3><p><code>Environment</code>定义了<code>Profiles</code>相关的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Environment</span> <span class="keyword">extends</span> <span class="title class_">PropertyResolver</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取所有可用的`profile`，如果没有可用的，使用默认的`default`(因此可以在xml中配置默认的`profile`，名称为`default`)</span></span><br><span class="line">    String[] getActiveProfiles();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取默认的`profile`，如果没有指定，返回默认的`default`</span></span><br><span class="line">    String[] getDefaultProfiles();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断`profile`是否可用，可以使用&#x27;!&#x27;前缀作为取反标记</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">acceptsProfiles</span><span class="params">(String... profiles)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ConfigurableEnvironment"><a href="#ConfigurableEnvironment" class="headerlink" title="ConfigurableEnvironment"></a>ConfigurableEnvironment</h3><p>如果说<code>Environment</code>定义了<code>Profiles</code>查询方法，那么<code>ConfigurableEnvironment</code>就定义了设置方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigurableEnvironment</span> <span class="keyword">extends</span> <span class="title class_">Environment</span>, ConfigurablePropertyResolver &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置可用的`profile`</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setActiveProfiles</span><span class="params">(String... profiles)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加可用的`profile`</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">addActiveProfile</span><span class="params">(String profile)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置默认的`profile`</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setDefaultProfiles</span><span class="params">(String... profiles)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取`propertySources`</span></span><br><span class="line">    MutablePropertySources <span class="title function_">getPropertySources</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取JVM系统配置</span></span><br><span class="line">    Map&lt;String, Object&gt; <span class="title function_">getSystemEnvironment</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取系统配置</span></span><br><span class="line">    Map&lt;String, Object&gt; <span class="title function_">getSystemProperties</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 合并`Environment`</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">merge</span><span class="params">(ConfigurableEnvironment parent)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AbstractEnvironment"><a href="#AbstractEnvironment" class="headerlink" title="AbstractEnvironment"></a>AbstractEnvironment</h3><p><code>AbstractEnvironment</code>对接口做了默认实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">AbstractEnvironment</span> <span class="keyword">implements</span> <span class="title class_">ConfigurableEnvironment</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 文件配置：是否忽略获取系统属性</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">IGNORE_GETENV_PROPERTY_NAME</span> <span class="operator">=</span> <span class="string">&quot;spring.getenv.ignore&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 启动命令：指定使用的`profile`</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">ACTIVE_PROFILES_PROPERTY_NAME</span> <span class="operator">=</span> <span class="string">&quot;spring.profiles.active&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 启动命令：指定默认的`profile`</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">DEFAULT_PROFILES_PROPERTY_NAME</span> <span class="operator">=</span> <span class="string">&quot;spring.profiles.default&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认`profile`名称。可以在将`profile`名称指定为`default`，`Spring`默认使用</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">RESERVED_DEFAULT_PROFILE_NAME</span> <span class="operator">=</span> <span class="string">&quot;default&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">Log</span> <span class="variable">logger</span> <span class="operator">=</span> LogFactory.getLog(getClass());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可用的`profile`列表</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;String&gt; activeProfiles = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认的`profile`列表，包含默认名称`default`，子类可覆盖`getReservedDefaultProfiles`，修改默认`profile`名称</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;String&gt; defaultProfiles = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>&lt;String&gt;(getReservedDefaultProfiles());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 属性资源</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">MutablePropertySources</span> <span class="variable">propertySources</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MutablePropertySources</span>(<span class="built_in">this</span>.logger);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 属性资源处理器</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">ConfigurablePropertyResolver</span> <span class="variable">propertyResolver</span> <span class="operator">=</span></span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">PropertySourcesPropertyResolver</span>(<span class="built_in">this</span>.propertySources);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AbstractEnvironment</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 自定义`propertySource`，子类实现。初始化时默认加载</span></span><br><span class="line">        customizePropertySources(<span class="built_in">this</span>.propertySources);</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span>.logger.isDebugEnabled()) &#123;</span><br><span class="line">            <span class="built_in">this</span>.logger.debug(String.format(</span><br><span class="line">                    <span class="string">&quot;Initialized %s with PropertySources %s&quot;</span>, getClass().getSimpleName(), <span class="built_in">this</span>.propertySources));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 由于`propertySource`在`propertySources`存在优先级(按顺序使用)，子类覆盖需要注意，可以看方法原注释</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">customizePropertySources</span><span class="params">(MutablePropertySources propertySources)</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认`profile`列表，包含`default`的集合，子类可覆盖实现</span></span><br><span class="line">    <span class="keyword">protected</span> Set&lt;String&gt; <span class="title function_">getReservedDefaultProfiles</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Collections.singleton(RESERVED_DEFAULT_PROFILE_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//---------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment">// Implementation of ConfigurableEnvironment interface</span></span><br><span class="line">    <span class="comment">//---------------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String[] getActiveProfiles() &#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.toStringArray(doGetActiveProfiles());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取可用的`profile`集合</span></span><br><span class="line">    <span class="comment">// 如果未设置可用的`profile`，解析启动参数`spring.profiles.active`，如果存在，设置为可用的`profile`</span></span><br><span class="line">    <span class="keyword">protected</span> Set&lt;String&gt; <span class="title function_">doGetActiveProfiles</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.activeProfiles) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">this</span>.activeProfiles.isEmpty()) &#123;</span><br><span class="line">                <span class="comment">// 从启动参数`spring.profiles.active`获取`profile`</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">profiles</span> <span class="operator">=</span> getProperty(ACTIVE_PROFILES_PROPERTY_NAME);</span><br><span class="line">                <span class="keyword">if</span> (StringUtils.hasText(profiles)) &#123;</span><br><span class="line">                    <span class="comment">// 设置为可用的`profile`</span></span><br><span class="line">                    setActiveProfiles(StringUtils.commaDelimitedListToStringArray(</span><br><span class="line">                            StringUtils.trimAllWhitespace(profiles)));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>.activeProfiles;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setActiveProfiles</span><span class="params">(String... profiles)</span> &#123;</span><br><span class="line">        Assert.notNull(profiles, <span class="string">&quot;Profile array must not be null&quot;</span>);</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.activeProfiles) &#123;</span><br><span class="line">            <span class="comment">// 清空</span></span><br><span class="line">            <span class="built_in">this</span>.activeProfiles.clear();</span><br><span class="line">            <span class="keyword">for</span> (String profile : profiles) &#123;</span><br><span class="line">                <span class="comment">// 验证`profile`格式是否正确</span></span><br><span class="line">                validateProfile(profile);</span><br><span class="line">                <span class="comment">// 添加为可用`profile`</span></span><br><span class="line">                <span class="built_in">this</span>.activeProfiles.add(profile);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addActiveProfile</span><span class="params">(String profile)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span>.logger.isDebugEnabled()) &#123;</span><br><span class="line">            <span class="built_in">this</span>.logger.debug(String.format(<span class="string">&quot;Activating profile &#x27;%s&#x27;&quot;</span>, profile));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 验证`profile`格式是否正确</span></span><br><span class="line">        validateProfile(profile);</span><br><span class="line">        <span class="comment">// 获取可用的`profile`集合，并添加</span></span><br><span class="line">        doGetActiveProfiles();</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.activeProfiles) &#123;</span><br><span class="line">            <span class="built_in">this</span>.activeProfiles.add(profile);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String[] getDefaultProfiles() &#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.toStringArray(doGetDefaultProfiles());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取默认的`profile`集合</span></span><br><span class="line">    <span class="comment">// 如果未设置默认的`profile`，解析启动参数`spring.profiles.default`，如果存在，设置为默认的`profile`</span></span><br><span class="line">    <span class="keyword">protected</span> Set&lt;String&gt; <span class="title function_">doGetDefaultProfiles</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.defaultProfiles) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">this</span>.defaultProfiles.equals(getReservedDefaultProfiles())) &#123;</span><br><span class="line">                <span class="comment">// 从启动参数`spring.profiles.default`获取</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">profiles</span> <span class="operator">=</span> getProperty(DEFAULT_PROFILES_PROPERTY_NAME);</span><br><span class="line">                <span class="keyword">if</span> (StringUtils.hasText(profiles)) &#123;</span><br><span class="line">                    <span class="comment">// 设置为默认的`profile`</span></span><br><span class="line">                    setDefaultProfiles(StringUtils.commaDelimitedListToStringArray(</span><br><span class="line">                            StringUtils.trimAllWhitespace(profiles)));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>.defaultProfiles;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setDefaultProfiles</span><span class="params">(String... profiles)</span> &#123;</span><br><span class="line">        Assert.notNull(profiles, <span class="string">&quot;Profile array must not be null&quot;</span>);</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.defaultProfiles) &#123;</span><br><span class="line">            <span class="comment">// 清空</span></span><br><span class="line">            <span class="built_in">this</span>.defaultProfiles.clear();</span><br><span class="line">            <span class="keyword">for</span> (String profile : profiles) &#123;</span><br><span class="line">                <span class="comment">// 验证</span></span><br><span class="line">                validateProfile(profile);</span><br><span class="line">                <span class="comment">// 添加为默认`profile`</span></span><br><span class="line">                <span class="built_in">this</span>.defaultProfiles.add(profile);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">acceptsProfiles</span><span class="params">(String... profiles)</span> &#123;</span><br><span class="line">        Assert.notEmpty(profiles, <span class="string">&quot;Must specify at least one profile&quot;</span>);</span><br><span class="line">        <span class="comment">// 只要有一个满足条件，即返回`true`</span></span><br><span class="line">        <span class="keyword">for</span> (String profile : profiles) &#123;</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.hasLength(profile) &amp;&amp; profile.charAt(<span class="number">0</span>) == <span class="string">&#x27;!&#x27;</span>) &#123;</span><br><span class="line">                <span class="comment">// 使用取反标记时，只要不等，就认为是可以使用</span></span><br><span class="line">                <span class="keyword">if</span> (!isProfileActive(profile.substring(<span class="number">1</span>))) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (isProfileActive(profile)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断`profile`是否可用，如果没有可用的`profile`，从默认的`profile`匹配，如果匹配到也认为是可以使用</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">isProfileActive</span><span class="params">(String profile)</span> &#123;</span><br><span class="line">        validateProfile(profile);</span><br><span class="line">        Set&lt;String&gt; currentActiveProfiles = doGetActiveProfiles();</span><br><span class="line">        <span class="keyword">return</span> (currentActiveProfiles.contains(profile) ||</span><br><span class="line">                (currentActiveProfiles.isEmpty() &amp;&amp; doGetDefaultProfiles().contains(profile)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 验证`profile`是否可用，主要是字符串验证(长度和非法字符&#x27;!&#x27;)</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">validateProfile</span><span class="params">(String profile)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!StringUtils.hasText(profile)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Invalid profile [&quot;</span> + profile + <span class="string">&quot;]: must contain text&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (profile.charAt(<span class="number">0</span>) == <span class="string">&#x27;!&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Invalid profile [&quot;</span> + profile + <span class="string">&quot;]: must not begin with ! operator&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> MutablePropertySources <span class="title function_">getPropertySources</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.propertySources;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@SuppressWarnings(&#123;&quot;unchecked&quot;, &quot;rawtypes&quot;&#125;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">getSystemEnvironment</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 判断是否忽略获取系统属性</span></span><br><span class="line">        <span class="keyword">if</span> (suppressGetenvAccess()) &#123;</span><br><span class="line">            <span class="keyword">return</span> Collections.emptyMap();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> (Map) System.getenv();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (AccessControlException ex) &#123;</span><br><span class="line">            <span class="comment">// `ReadOnlySystemAttributesMap`为`Map`的一个实现</span></span><br><span class="line">            <span class="comment">// 如果初始化时未获取到系统配置，则在需要读取属性值时重新获取</span></span><br><span class="line">            <span class="keyword">return</span> (Map) <span class="keyword">new</span> <span class="title class_">ReadOnlySystemAttributesMap</span>() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> String <span class="title function_">getSystemAttribute</span><span class="params">(String attributeName)</span> &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> System.getenv(attributeName);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">catch</span> (AccessControlException ex) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">                            logger.info(String.format(<span class="string">&quot;Caught AccessControlException when accessing system &quot;</span> +</span><br><span class="line">                                    <span class="string">&quot;environment variable [%s]; its value will be returned [null]. Reason: %s&quot;</span>,</span><br><span class="line">                                    attributeName, ex.getMessage()));</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断是否忽略获取系统属性</span></span><br><span class="line">    <span class="comment">// 从`spring.properties`文件中读取(该文件可以新建在`resources`文件夹下)</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">suppressGetenvAccess</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SpringProperties.getFlag(IGNORE_GETENV_PROPERTY_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@SuppressWarnings(&#123;&quot;unchecked&quot;, &quot;rawtypes&quot;&#125;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">getSystemProperties</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> (Map) System.getProperties();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (AccessControlException ex) &#123;</span><br><span class="line">            <span class="comment">// `ReadOnlySystemAttributesMap`为`Map`的一个实现</span></span><br><span class="line">            <span class="comment">// 如果初始化时未获取到系统配置，则在需要读取属性值时重新获取</span></span><br><span class="line">            <span class="keyword">return</span> (Map) <span class="keyword">new</span> <span class="title class_">ReadOnlySystemAttributesMap</span>() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> String <span class="title function_">getSystemAttribute</span><span class="params">(String attributeName)</span> &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> System.getProperty(attributeName);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">catch</span> (AccessControlException ex) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">                            logger.info(String.format(<span class="string">&quot;Caught AccessControlException when accessing system &quot;</span> +</span><br><span class="line">                                    <span class="string">&quot;property [%s]; its value will be returned [null]. Reason: %s&quot;</span>,</span><br><span class="line">                                    attributeName, ex.getMessage()));</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">merge</span><span class="params">(ConfigurableEnvironment parent)</span> &#123;</span><br><span class="line">        <span class="comment">// 合并`PropertySource`，默认追加在最后</span></span><br><span class="line">        <span class="comment">// `PropertySources`存在优先级(顺序)，使用该方法时需要注意</span></span><br><span class="line">        <span class="keyword">for</span> (PropertySource&lt;?&gt; ps : parent.getPropertySources()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">this</span>.propertySources.contains(ps.getName())) &#123;</span><br><span class="line">                <span class="built_in">this</span>.propertySources.addLast(ps);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 合并可用`profile`</span></span><br><span class="line">        String[] parentActiveProfiles = parent.getActiveProfiles();</span><br><span class="line">        <span class="keyword">if</span> (!ObjectUtils.isEmpty(parentActiveProfiles)) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (<span class="built_in">this</span>.activeProfiles) &#123;</span><br><span class="line">                <span class="keyword">for</span> (String profile : parentActiveProfiles) &#123;</span><br><span class="line">                    <span class="built_in">this</span>.activeProfiles.add(profile);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 合并默认`profile`</span></span><br><span class="line">        String[] parentDefaultProfiles = parent.getDefaultProfiles();</span><br><span class="line">        <span class="keyword">if</span> (!ObjectUtils.isEmpty(parentDefaultProfiles)) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (<span class="built_in">this</span>.defaultProfiles) &#123;</span><br><span class="line">                <span class="comment">// 移除`default`</span></span><br><span class="line">                <span class="built_in">this</span>.defaultProfiles.remove(RESERVED_DEFAULT_PROFILE_NAME);</span><br><span class="line">                <span class="keyword">for</span> (String profile : parentDefaultProfiles) &#123;</span><br><span class="line">                    <span class="built_in">this</span>.defaultProfiles.add(profile);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略部分实现...</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="StandardEnvironment-1"><a href="#StandardEnvironment-1" class="headerlink" title="StandardEnvironment"></a>StandardEnvironment</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StandardEnvironment</span> <span class="keyword">extends</span> <span class="title class_">AbstractEnvironment</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME</span> <span class="operator">=</span> <span class="string">&quot;systemEnvironment&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME</span> <span class="operator">=</span> <span class="string">&quot;systemProperties&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 此处添加了两个`PropertySource`</span></span><br><span class="line">    <span class="comment">// 如果看`StandardServletEnvironment`实现，还有添加`servlet`相关属性配置</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">customizePropertySources</span><span class="params">(MutablePropertySources propertySources)</span> &#123;</span><br><span class="line">        propertySources.addLast(<span class="keyword">new</span> <span class="title class_">MapPropertySource</span>(SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME, getSystemProperties()));</span><br><span class="line">        propertySources.addLast(<span class="keyword">new</span> <span class="title class_">SystemEnvironmentPropertySource</span>(SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, getSystemEnvironment()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/SourceCode/" rel="tag"># SourceCode</a>
+              <a href="/tags/Environment/" rel="tag"># Environment</a>
+              <a href="/tags/Properties/" rel="tag"># Properties</a>
+              <a href="/tags/Profiles/" rel="tag"># Profiles</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/spring-property-resolver/" rel="prev" title="Spring中的PropertyResolver">
+                  <i class="fa fa-angle-left"></i> Spring中的PropertyResolver
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/05/spring-profiles/" rel="next" title="Spring中的Profiles">
+                  Spring中的Profiles <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

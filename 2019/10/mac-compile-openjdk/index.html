@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0AlDv7sRoNt2IlCQ7feng5N8uASqb_Ry0IGwKh21-q0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iyichen.xyz","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="环境准备macOS High Sierra，版本 10.13.6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MacOS编译OpenJDK9">
+<meta property="og:url" content="https://iyichen.xyz/2019/10/mac-compile-openjdk/index.html">
+<meta property="og:site_name" content="自留地">
+<meta property="og:description" content="环境准备macOS High Sierra，版本 10.13.6">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://f004.backblazeb2.com/file/i-static/19/10/191017-head-code.png">
+<meta property="article:published_time" content="2019-10-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-09T17:35:44.122Z">
+<meta property="article:author" content="Yii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="SourceCode">
+<meta property="article:tag" content="OpenJDK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://f004.backblazeb2.com/file/i-static/19/10/191017-head-code.png">
+
+
+<link rel="canonical" href="https://iyichen.xyz/2019/10/mac-compile-openjdk/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iyichen.xyz/2019/10/mac-compile-openjdk/","path":"2019/10/mac-compile-openjdk/","title":"MacOS编译OpenJDK9"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MacOS编译OpenJDK9 | 自留地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">自留地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">得之坦然，失之淡然</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85brew"><span class="nav-number">1.1.</span> <span class="nav-text">安装brew</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85mercurial"><span class="nav-number">1.2.</span> <span class="nav-text">安装mercurial</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85ccache"><span class="nav-number">1.3.</span> <span class="nav-text">安装ccache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85freetype"><span class="nav-number">1.4.</span> <span class="nav-text">安装freetype</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">源码下载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">编译配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-1"><span class="nav-number">2.3.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF"><span class="nav-number">2.4.</span> <span class="nav-text">编译错误</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80"><span class="nav-number">2.4.1.</span> <span class="nav-text">问题一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C"><span class="nav-number">2.4.2.</span> <span class="nav-text">问题二</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89"><span class="nav-number">2.4.3.</span> <span class="nav-text">问题三</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81"><span class="nav-number">2.5.</span> <span class="nav-text">测试验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Yii"
+      src="/images/zm.jpg">
+  <p class="site-author-name" itemprop="name">Yii</p>
+  <div class="site-description" itemprop="description">一个空想主义者</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iyichen" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iyichen" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iyichen9102@gmail.com" title="E-Mail → mailto:iyichen9102@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iyichen.xyz/2019/10/mac-compile-openjdk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/zm.jpg">
+      <meta itemprop="name" content="Yii">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="自留地">
+      <meta itemprop="description" content="一个空想主义者">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MacOS编译OpenJDK9 | 自留地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MacOS编译OpenJDK9
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-19 00:00:00" itemprop="dateCreated datePublished" datetime="2019-10-19T00:00:00+08:00">2019-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Software/" itemprop="url" rel="index"><span itemprop="name">Software</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://f004.backblazeb2.com/file/i-static/19/10/191017-head-code.png" alt="code"></p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>macOS High Sierra，版本 10.13.6</p>
+<span id="more"></span>
+
+<h3 id="安装brew"><a href="#安装brew" class="headerlink" title="安装brew"></a>安装brew</h3><p>如果没有安装，<a target="_blank" rel="noopener" href="https://brew.sh/index_zh-cn.html">参考这里</a>，命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/usr/bin/ruby -e <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装mercurial"><a href="#安装mercurial" class="headerlink" title="安装mercurial"></a>安装mercurial</h3><p><code>openjdk</code>代码由hg管理，命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">brew install mercurial</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装ccache"><a href="#安装ccache" class="headerlink" title="安装ccache"></a>安装ccache</h3><p><code>ccache</code>可以提高编译速度，命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">brew install ccache</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装freetype"><a href="#安装freetype" class="headerlink" title="安装freetype"></a>安装freetype</h3><p><code>freetype</code>编译需要，命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">brew install freetype</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><h3 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">clone</span>到指定目录</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hg <span class="built_in">clone</span> http://hg.openjdk.java.net/jdk9/jdk9 YourOpenJDK</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入下载目录</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> YourOpenJDK</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行下载命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">bash ./get_source.sh</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="编译配置"><a href="#编译配置" class="headerlink" title="编译配置"></a>编译配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">bash configure --with-target-bits=64 --with-freetype=/usr/local/Cellar/freetype/2.9.1 --enable-ccache --with-jvm-variants=server,client --with-boot-jdk-jvmargs=<span class="string">&quot;-Xlint:deprecation -Xlint:unchecked&quot;</span> --disable-warnings-as-errors --with-debug-level=slowdebug 2&gt;&amp;1 | <span class="built_in">tee</span> configure_mac_x64.log</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>注意需要修改命令中的<code>freetype</code>版本号</strong></p>
+<p>编译参数简介：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">--with-target-bits：设置32位/64位编译</span><br><span class="line">--with-freetype：设置freetype路径</span><br><span class="line">--enable-ccache：设置启用ccache</span><br><span class="line">--with-jvm-variants=client,server：为了保证兼容性，编译时JVM的Client和Server都会被编译</span><br><span class="line">--with-boot-jdk-jvmargs：提供运行Bootstrap JDK所需要的JVM参数</span><br><span class="line">--disable-zip-debug-info：禁用zip调试信息</span><br><span class="line">--disable-warnings-as-errors：禁用将警告当做错误，避免因为警告而中断编译</span><br><span class="line">--with-debug-level：设置调试等级</span><br><span class="line">2&gt;&amp;1 | tee configure_mac_x64.log：将错误信息重定向至标准输出，并输出到configure_mac_x64.log</span><br></pre></td></tr></table></figure>
+
+<p>编译配置创建完成后控制台输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">A new configuration has been successfully created in</span><br><span class="line">/Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug</span><br><span class="line">using configure arguments &#x27;--with-target-bits=64 --with-freetype=/usr/local/Cellar/freetype/2.9.1 --enable-ccache --with-jvm-variants=server,client --with-boot-jdk-jvmargs=&#x27;-Xlint:deprecation -Xlint:unchecked&#x27; --disable-warnings-as-errors --with-debug-level=slowdebug&#x27;.</span><br><span class="line"></span><br><span class="line">Configuration summary:</span><br><span class="line">* Debug level:    slowdebug</span><br><span class="line">* HS debug level: debug</span><br><span class="line">* JDK variant:    normal</span><br><span class="line">* JVM variants:   server client</span><br><span class="line">* OpenJDK target: OS: macosx, CPU architecture: x86, address length: 64</span><br><span class="line">* Version string: 9-internal+0-adhoc.yier.jdk9 (9-internal)</span><br><span class="line"></span><br><span class="line">Tools summary:</span><br><span class="line">* Boot JDK:       java version &quot;1.8.0_181&quot; Java(TM) SE Runtime Environment (build 1.8.0_181-b13) Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)  (at /Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home)</span><br><span class="line">* Toolchain:      clang (clang/LLVM)</span><br><span class="line">* C Compiler:     Version 10.0.0 (at /usr/bin/clang)</span><br><span class="line">* C++ Compiler:   Version 10.0.0 (at /usr/bin/clang++)</span><br><span class="line"></span><br><span class="line">Build performance summary:</span><br><span class="line">* Cores to use:   4</span><br><span class="line">* Memory limit:   8192 MB</span><br><span class="line">* ccache status:  Active (3.6)</span><br><span class="line"></span><br><span class="line">NOTE: You have requested to build more than one version of the JVM, which</span><br><span class="line">will result in longer build times.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="编译-1"><a href="#编译-1" class="headerlink" title="编译"></a>编译</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设定语言选项</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">export</span> LANG=C</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译命令并输出日志到文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make all LOG=debug  2&gt;&amp;1 | <span class="built_in">tee</span> make_mac_x64.log</span></span><br></pre></td></tr></table></figure>
+
+<p>编译完成后控制台输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Finished building target &#x27;all&#x27; in configuration &#x27;macosx-x86_64-normal-serverANDclient-slowdebug&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="编译错误"><a href="#编译错误" class="headerlink" title="编译错误"></a>编译错误</h3><h4 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">=== Output from failing command(s) repeated here ===</span><br><span class="line">/usr/bin/printf &quot;* For target hotspot_variant-client_libjvm_objs_virtualspace.o:\n&quot; </span><br><span class="line">* For target hotspot_variant-client_libjvm_objs_virtualspace.o:</span><br><span class="line">(/usr/bin/grep -v -e &quot;^Note: including file:&quot; &lt;  /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-client_libjvm_objs_virtualspace.o.log || true) | /usr/bin/head -n 12 </span><br><span class="line">../src/share/vm/memory/virtualspace.cpp:584:14: error: ordered comparison between pointer and zero (&#x27;char *&#x27; and &#x27;int&#x27;)</span><br><span class="line">  if (base() &gt; 0) &#123;</span><br><span class="line">      ~~~~~~ ^ ~</span><br><span class="line">1 error generated.</span><br><span class="line">if test `/usr/bin/wc -l &lt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-client_libjvm_objs_virtualspace.o.log` -gt 12; then /bin/echo &quot;   ... (rest of output omitted)&quot; ; fi </span><br><span class="line">/usr/bin/printf &quot;* For target hotspot_variant-server_libjvm_objs_lcm.o:\n&quot; </span><br><span class="line">* For target hotspot_variant-server_libjvm_objs_lcm.o:</span><br><span class="line">(/usr/bin/grep -v -e &quot;^Note: including file:&quot; &lt;  /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-server_libjvm_objs_lcm.o.log || true) | /usr/bin/head -n 12 </span><br><span class="line">../src/share/vm/opto/lcm.cpp:42:35: error: ordered comparison between pointer and zero (&#x27;address&#x27; (aka &#x27;unsigned char *&#x27;) and &#x27;int&#x27;)</span><br><span class="line">  if (Universe::narrow_oop_base() &gt; 0) &#123; // Implies UseCompressedOops.</span><br><span class="line">      ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~</span><br><span class="line">1 error generated.</span><br><span class="line">if test `/usr/bin/wc -l &lt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-server_libjvm_objs_lcm.o.log` -gt 12; then /bin/echo &quot;   ... (rest of output omitted)&quot; ; fi </span><br><span class="line">/usr/bin/printf &quot;\n* All command lines available in /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs.\n&quot; </span><br><span class="line"></span><br><span class="line">* All command lines available in /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs.</span><br><span class="line">/usr/bin/printf &quot;=== End of repeated output ===\n&quot; </span><br><span class="line">=== End of repeated output ===</span><br><span class="line">if /usr/bin/grep -q &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log 2&gt; /dev/null; then /usr/bin/printf &quot;\n=== Make failed targets repeated here ===\n&quot; ; /usr/bin/grep &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log ; /usr/bin/printf &quot;=== End of repeated output ===\n&quot; ; /usr/bin/printf &quot;\nHint: Try searching the build log for the name of the first failed target.\n&quot; ; else /usr/bin/printf &quot;\nNo indication of failed target found.\n&quot; ; /usr/bin/printf &quot;Hint: Try searching the build log for &#x27;] Error&#x27;.\n&quot; ; fi</span><br><span class="line"></span><br><span class="line">No indication of failed target found.</span><br><span class="line">Hint: Try searching the build log for &#x27;] Error&#x27;.</span><br><span class="line">/usr/bin/printf &quot;Hint: See common/doc/building.html#troubleshooting for assistance.\n\n&quot;</span><br><span class="line">Hint: See common/doc/building.html#troubleshooting for assistance.</span><br><span class="line"></span><br><span class="line">make[1]: *** [main] Error 2</span><br><span class="line">make: *** [all] Error 2</span><br></pre></td></tr></table></figure>
+
+<p>错误1指向文件<code>../src/share/vm/memory/virtualspace.cpp</code>第584行，调整为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// if (base() &gt; 0) &#123;</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">base</span>() != <span class="literal">NULL</span>) &#123;</span><br></pre></td></tr></table></figure>
+
+<p>错误2指向文件<code>../src/share/vm/opto/lcm.cpp</code>第42行，调整为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// if (Universe::narrow_oop_base() &gt; 0) &#123; // Implies UseCompressedOops.</span></span><br><span class="line"><span class="keyword">if</span> (Universe::<span class="built_in">narrow_oop_base</span>() != <span class="literal">NULL</span>) &#123; <span class="comment">// Implies UseCompressedOops.</span></span><br></pre></td></tr></table></figure>
+
+<p>解决方案：<a target="_blank" rel="noopener" href="https://bugs.openjdk.java.net/browse/JDK-8187787">https://bugs.openjdk.java.net/browse/JDK-8187787</a></p>
+<h4 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">=== Output from failing command(s) repeated here ===</span><br><span class="line">/usr/bin/printf &quot;* For target hotspot_variant-server_libjvm_objs_loopPredicate.o:\n&quot; </span><br><span class="line">* For target hotspot_variant-server_libjvm_objs_loopPredicate.o:</span><br><span class="line">(/usr/bin/grep -v -e &quot;^Note: including file:&quot; &lt;  /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-server_libjvm_objs_loopPredicate.o.log || true) | /usr/bin/head -n 12 </span><br><span class="line">../src/share/vm/opto/loopPredicate.cpp:903:73: error: ordered comparison between pointer and zero (&#x27;const TypeInt *&#x27; and &#x27;int&#x27;)</span><br><span class="line">      assert(rng-&gt;Opcode() == Op_LoadRange || _igvn.type(rng)-&gt;is_int() &gt;= 0, &quot;must be&quot;);</span><br><span class="line">                                              ~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~</span><br><span class="line">../src/share/vm/utilities/debug.hpp:141:33: note: expanded from macro &#x27;assert&#x27;</span><br><span class="line">#define assert(p, ...) vmassert(p, __VA_ARGS__)</span><br><span class="line">                                ^</span><br><span class="line">../src/share/vm/utilities/debug.hpp:130:9: note: expanded from macro &#x27;vmassert&#x27;</span><br><span class="line">  if (!(p)) &#123;                                                                  \</span><br><span class="line">        ^</span><br><span class="line">1 error generated.</span><br><span class="line">if test `/usr/bin/wc -l &lt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs/hotspot_variant-server_libjvm_objs_loopPredicate.o.log` -gt 12; then /bin/echo &quot;   ... (rest of output omitted)&quot; ; fi </span><br><span class="line">/usr/bin/printf &quot;\n* All command lines available in /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs.\n&quot; </span><br><span class="line"></span><br><span class="line">* All command lines available in /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/failure-logs.</span><br><span class="line">/usr/bin/printf &quot;=== End of repeated output ===\n&quot; </span><br><span class="line">=== End of repeated output ===</span><br><span class="line">if /usr/bin/grep -q &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log 2&gt; /dev/null; then /usr/bin/printf &quot;\n=== Make failed targets repeated here ===\n&quot; ; /usr/bin/grep &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log ; /usr/bin/printf &quot;=== End of repeated output ===\n&quot; ; /usr/bin/printf &quot;\nHint: Try searching the build log for the name of the first failed target.\n&quot; ; else /usr/bin/printf &quot;\nNo indication of failed target found.\n&quot; ; /usr/bin/printf &quot;Hint: Try searching the build log for &#x27;] Error&#x27;.\n&quot; ; fi</span><br><span class="line"></span><br><span class="line">No indication of failed target found.</span><br><span class="line">Hint: Try searching the build log for &#x27;] Error&#x27;.</span><br><span class="line">/usr/bin/printf &quot;Hint: See common/doc/building.html#troubleshooting for assistance.\n\n&quot;</span><br><span class="line">Hint: See common/doc/building.html#troubleshooting for assistance.</span><br><span class="line"></span><br><span class="line">make[1]: *** [main] Error 2</span><br><span class="line">make: *** [all] Error 2</span><br></pre></td></tr></table></figure>
+
+<p>错误指向<code>../src/share/vm/opto/loopPredicate.cpp</code>第903行，调整为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//assert(rng-&gt;Opcode() == Op_LoadRange || _igvn.type(rng)-&gt;is_int() &gt;= 0, &quot;must be&quot;);</span></span><br><span class="line"><span class="built_in">assert</span>(rng-&gt;<span class="built_in">Opcode</span>() == Op_LoadRange || iff-&gt;<span class="built_in">is_RangeCheck</span>() || _igvn.<span class="built_in">type</span>(rng)-&gt;<span class="built_in">is_int</span>()-&gt;_lo &gt;= <span class="number">0</span>, <span class="string">&quot;must be&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>解决方案：<a target="_blank" rel="noopener" href="https://bugs.openjdk.java.net/browse/JDK-8187787">https://bugs.openjdk.java.net/browse/JDK-8187787</a></p>
+<h4 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#</span><br><span class="line"># A fatal error has been detected by the Java Runtime Environment:</span><br><span class="line">#</span><br><span class="line">#  SIGILL (0x4) at pc=0x0000000102b4cc58, pid=50033, tid=6403</span><br><span class="line">#</span><br><span class="line"># JRE version: OpenJDK Runtime Environment (9.0) (slowdebug build 9-internal+0-adhoc.yier.jdk9)</span><br><span class="line"># Java VM: OpenJDK 64-Bit Server VM (slowdebug 9-internal+0-adhoc.yier.jdk9, mixed mode, tiered, compressed oops, serial gc, bsd-amd64)</span><br><span class="line"># Problematic frame:</span><br><span class="line"># V  [libjvm.dylib+0xd4cc58]  PerfData::~PerfData()+0x8</span><br><span class="line">#</span><br><span class="line"># No core dump will be written. Core dumps have been disabled. To enable core dumping, try &quot;ulimit -c unlimited&quot; before starting Java again</span><br><span class="line">#</span><br><span class="line"># An error report file with more information is saved as:</span><br><span class="line"># /Users/yier/Documents/openjdk/jdk9/make/hs_err_pid50033.log</span><br><span class="line">#</span><br><span class="line"># If you would like to submit a bug report, please visit:</span><br><span class="line">#   http://bugreport.java.com/bugreport/crash.jsp</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">[error occurred during error reporting (), id 0x4]</span><br><span class="line"></span><br><span class="line">make[3]: *** [/Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/jdk/_packages_attribute.done] Abort trap: 6</span><br><span class="line">make[2]: *** [exploded-image-optimize] Error 2</span><br><span class="line"></span><br><span class="line">ERROR: Build failed for target &#x27;all&#x27; in configuration &#x27;macosx-x86_64-normal-serverANDclient-slowdebug&#x27; (exit code 2) </span><br><span class="line">[ -f /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/javacservers/server.port ] &amp;&amp; /bin/echo Stopping sjavac server &amp;&amp; /usr/bin/touch /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/javacservers/server.port.stop; true</span><br><span class="line">/bin/date &#x27;+%Y %m %d %H %M %S&#x27; | /usr/bin/awk &#x27;&#123; print $1,$2,$3,$4,$5,$6,($4*3600+$5*60+$6) &#125;&#x27; &gt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_end_TOTAL</span><br><span class="line">/bin/date &#x27;+%Y-%m-%d %H:%M:%S&#x27; &gt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_end_TOTAL_human_readable</span><br><span class="line">/bin/echo `/bin/cat /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_start_TOTAL` `/bin/cat /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_end_TOTAL` TOTAL | /usr/bin/awk &#x27;&#123; F=$7; T=$14; if (F &gt; T) &#123; T+=3600*24 &#125;; D=T-F; H=int(D/3600); M=int((D-H*3600)/60); S=D-H*3600-M*60; printf(&quot;%02d:%02d:%02d %s\n&quot;,H,M,S,$15); &#125;&#x27; &gt; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_diff_TOTAL</span><br><span class="line">/usr/bin/printf  -- &quot;----- Build times -------\nStart %s\nEnd   %s\n%s\n%s\n-------------------------\n&quot; &quot;`/bin/cat /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_start_TOTAL_human_readable`&quot; &quot;`/bin/cat /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_end_TOTAL_human_readable`&quot; &quot;`/bin/ls /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_diff_* | /usr/bin/grep -v _TOTAL | /usr/bin/xargs /bin/cat | /usr/bin/sort -k 2`&quot; &quot;`/bin/cat /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/make-support/build-times/build_time_diff_TOTAL`&quot; &gt; &gt;(/usr/bin/tee -a /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log) 2&gt; &gt;(/usr/bin/tee -a /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log &gt;&amp;2) &amp;&amp; wait</span><br><span class="line">if /usr/bin/grep -q &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log 2&gt; /dev/null; then /usr/bin/printf &quot;\n=== Make failed targets repeated here ===\n&quot; ; /usr/bin/grep &quot;recipe for target .* failed&quot; /Users/yier/Documents/openjdk/jdk9/build/macosx-x86_64-normal-serverANDclient-slowdebug/build.log ; /usr/bin/printf &quot;=== End of repeated output ===\n&quot; ; /usr/bin/printf &quot;\nHint: Try searching the build log for the name of the first failed target.\n&quot; ; else /usr/bin/printf &quot;\nNo indication of failed target found.\n&quot; ; /usr/bin/printf &quot;Hint: Try searching the build log for &#x27;] Error&#x27;.\n&quot; ; fi</span><br><span class="line">----- Build times -------</span><br><span class="line">Start 2019-10-16 20:52:13</span><br><span class="line">End   2019-10-16 20:52:28</span><br><span class="line"></span><br><span class="line">00:00:15 TOTAL</span><br><span class="line">-------------------------</span><br><span class="line"></span><br><span class="line">No indication of failed target found.</span><br><span class="line">Hint: Try searching the build log for &#x27;] Error&#x27;.</span><br><span class="line">/usr/bin/printf &quot;Hint: See common/doc/building.html#troubleshooting for assistance.\n\n&quot;</span><br><span class="line">Hint: See common/doc/building.html#troubleshooting for assistance.</span><br><span class="line"></span><br><span class="line">make[1]: *** [main] Error 2</span><br><span class="line">make: *** [all] Error 2</span><br></pre></td></tr></table></figure>
+
+<p>注释文件<code>hotspot/src/share/vm/runtime/perfMemory.cpp</code>第75~77行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// if (SafepointSynchronize::is_at_safepoint() &amp;&amp; !StatSampler::is_active()) &#123;</span></span><br><span class="line"><span class="comment">//     PerfDataManager::destroy();</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>解决方案：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/50678467/building-openjdk-9-on-mac-os/54954805#54954805">https://stackoverflow.com/questions/50678467/building-openjdk-9-on-mac-os/54954805</a></p>
+<p>但是这样处理后，使用<code>jstat</code>监控JVM时可能会导致 <strong>内存泄露</strong></p>
+<h3 id="测试验证"><a href="#测试验证" class="headerlink" title="测试验证"></a>测试验证</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd build/macosx-x86_64-normal-serverANDclient-slowdebug/jdk/bin/</span><br><span class="line">$ ./java -version</span><br></pre></td></tr></table></figure>
+
+<p>控制台输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openjdk version &quot;9-internal&quot;</span><br><span class="line">OpenJDK Runtime Environment (slowdebug build 9-internal+0-adhoc.yier.jdk9)</span><br><span class="line">OpenJDK 64-Bit Server VM (slowdebug build 9-internal+0-adhoc.yier.jdk9, mixed mode)</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/26bd050610a4">Mac OSX 10.12.1 编译 Openjdk 9</a><br><a target="_blank" rel="noopener" href="https://huminxi.netlify.com/2019/01/03/macos%20%E7%BC%96%E8%AF%91%20openjdk%2010/">macOS 编译 OpenJDK 10</a><br><a target="_blank" rel="noopener" href="https://imkiva.com/2018/02/24/building-openjdk8-on-macos/">在 macOS 上编译 OpenJDK 8</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/SourceCode/" rel="tag"># SourceCode</a>
+              <a href="/tags/OpenJDK/" rel="tag"># OpenJDK</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/09/matrix-uris/" rel="prev" title="矩阵URI(Matrix URIs)">
+                  <i class="fa fa-angle-left"></i> 矩阵URI(Matrix URIs)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/10/jmx-monitoring-jvm/" rel="next" title="JMX简单使用">
+                  JMX简单使用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Yii</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">52k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:08</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"iyichen/iyichen.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
